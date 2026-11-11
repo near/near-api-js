@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">RpcClientConfigResponse</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#archive">archive</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#block_header_fetch_horizon">block_header_fetch_horizon</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#block_production_tracking_delay">block_production_tracking_delay</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#block_request_timeout">block_request_timeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#catchup_step_period">catchup_step_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chain_id">chain_id</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chunk_distribution_network">chunk_distribution_network</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ChunkDistributionNetworkConfig.html" class="tsd-signature-type tsd-kind-type-alias">ChunkDistributionNetworkConfig</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chunk_request_retry_period">chunk_request_retry_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chunk_validation_threads">chunk_validation_threads</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chunk_wait_mult">chunk_wait_mult</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#chunks_cache_height_horizon">chunks_cache_height_horizon</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#client_background_migration_threads">client_background_migration_threads</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#cloud_archival_writer">cloud_archival_writer</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CloudArchivalWriterConfig.html" class="tsd-signature-type tsd-kind-type-alias">CloudArchivalWriterConfig</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#disable_tx_routing">disable_tx_routing</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#doomslug_step_period">doomslug_step_period</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#enable_early_prepare_transactions">enable_early_prepare_transactions</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#enable_multiline_logging">enable_multiline_logging</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#enable_statistics_export">enable_statistics_export</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#epoch_length">epoch_length</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#epoch_sync">epoch_sync</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.EpochSyncConfig.html" class="tsd-signature-type tsd-kind-type-alias">EpochSyncConfig</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#expected_shutdown">expected_shutdown</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#gc">gc</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.GcConfig.html" class="tsd-signature-type tsd-kind-type-alias">GcConfig</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#header_sync_expected_height_per_second">header_sync_expected_height_per_second</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#header_sync_initial_timeout">header_sync_initial_timeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#header_sync_progress_timeout">header_sync_progress_timeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#header_sync_stall_ban_timeout">header_sync_stall_ban_timeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#log_summary_period">log_summary_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#log_summary_style">log_summary_style</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.LogSummaryStyle.html" class="tsd-signature-type tsd-kind-type-alias">LogSummaryStyle</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_block_production_delay">max_block_production_delay</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_block_wait_delay">max_block_wait_delay</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#max_gas_burnt_view">max_gas_burnt_view</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#min_block_production_delay">min_block_production_delay</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#min_num_peers">min_num_peers</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#num_block_producer_seats">num_block_producer_seats</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#orphan_state_witness_max_size">orphan_state_witness_max_size</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#orphan_state_witness_pool_size">orphan_state_witness_pool_size</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#produce_chunk_add_transactions_time_limit">produce_chunk_add_transactions_time_limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#produce_empty_blocks">produce_empty_blocks</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#protocol_version_check">protocol_version_check</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ProtocolVersionCheckConfig.html" class="tsd-signature-type tsd-kind-type-alias">ProtocolVersionCheckConfig</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#receipt_to_tx_max_hint_window">receipt_to_tx_max_hint_window</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#receipt_to_tx_max_hop_distance">receipt_to_tx_max_hop_distance</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#receipt_to_tx_max_outcomes_per_request">receipt_to_tx_max_outcomes_per_request</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#resharding_config">resharding_config</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rpc_addr">rpc_addr</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_invalid_witnesses">save_invalid_witnesses</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_latest_witnesses">save_latest_witnesses</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_receipt_to_tx">save_receipt_to_tx</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_state_changes">save_state_changes</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_trie_changes">save_trie_changes</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_tx_outcomes">save_tx_outcomes</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#save_untracked_partial_chunks_parts">save_untracked_partial_chunks_parts</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#skip_sync_wait">skip_sync_wait</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state_request_server_threads">state_request_server_threads</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state_request_throttle_period">state_request_throttle_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state_requests_per_throttle_period">state_requests_per_throttle_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state_sync">state_sync</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.StateSyncConfig.html" class="tsd-signature-type tsd-kind-type-alias">StateSyncConfig</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state_sync_p2p_timeout">state_sync_p2p_timeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state_sync_retry_backoff">state_sync_retry_backoff</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sync_check_period">sync_check_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sync_height_threshold">sync_height_threshold</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sync_max_block_requests">sync_max_block_requests</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sync_step_period">sync_step_period</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#tracked_shards_config">tracked_shards_config</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.TrackedShardsConfig.html" class="tsd-signature-type tsd-kind-type-alias">TrackedShardsConfig</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#transaction_pool_size_limit">transaction_pool_size_limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#transaction_pool_strict_nonce_ttl_blocks">transaction_pool_strict_nonce_ttl_blocks</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#transaction_request_handler_threads">transaction_request_handler_threads</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#trie_viewer_state_size_limit">trie_viewer_state_size_limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#ttl_account_id_router">ttl_account_id_router</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#tx_routing_height_horizon">tx_routing_height_horizon</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#version">version</a><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.Version.html" class="tsd-signature-type tsd-kind-type-alias">Version</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#view_access_keys_limit">view_access_keys_limit</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#view_client_threads">view_client_threads</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4471">src/rpc/types.gen.ts:4471</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4471">src/rpc/types.gen.ts:4471</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -106,42 +106,42 @@
 <div class="tsd-comment tsd-typography"><p>Not clear old data, set <code>true</code> for archive nodes.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4475">src/rpc/types.gen.ts:4475</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4475">src/rpc/types.gen.ts:4475</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="block_header_fetch_horizon"><code class="tsd-tag">Optional</code><span>block_<wbr/>header_<wbr/>fetch_<wbr/>horizon</span><a href="#block_header_fetch_horizon" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">block_header_fetch_horizon</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Behind this horizon header fetch kicks in.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4479">src/rpc/types.gen.ts:4479</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4479">src/rpc/types.gen.ts:4479</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="block_production_tracking_delay"><code class="tsd-tag">Optional</code><span>block_<wbr/>production_<wbr/>tracking_<wbr/>delay</span><a href="#block_production_tracking_delay" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">block_production_tracking_delay</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Duration to check for producing / skipping block.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4483">src/rpc/types.gen.ts:4483</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4483">src/rpc/types.gen.ts:4483</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="block_request_timeout"><code class="tsd-tag">Optional</code><span>block_<wbr/>request_<wbr/>timeout</span><a href="#block_request_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">block_request_timeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How long to wait for a state sync block request response</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4487">src/rpc/types.gen.ts:4487</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4487">src/rpc/types.gen.ts:4487</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="catchup_step_period"><code class="tsd-tag">Optional</code><span>catchup_<wbr/>step_<wbr/>period</span><a href="#catchup_step_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">catchup_step_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>Time between check to perform catchup.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4491">src/rpc/types.gen.ts:4491</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4491">src/rpc/types.gen.ts:4491</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chain_id"><code class="tsd-tag">Optional</code><span>chain_<wbr/>id</span><a href="#chain_id" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chain_id</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>Chain id for status.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4495">src/rpc/types.gen.ts:4495</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4495">src/rpc/types.gen.ts:4495</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chunk_distribution_network"><code class="tsd-tag">Optional</code><span>chunk_<wbr/>distribution_<wbr/>network</span><a href="#chunk_distribution_network" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chunk_distribution_network</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ChunkDistributionNetworkConfig.html" class="tsd-signature-type tsd-kind-type-alias">ChunkDistributionNetworkConfig</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -151,28 +151,28 @@ Nodes not participating will still function fine, but possibly with higher
 latency due to the need of requesting chunks over the peer-to-peer network.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4502">src/rpc/types.gen.ts:4502</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4502">src/rpc/types.gen.ts:4502</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chunk_request_retry_period"><code class="tsd-tag">Optional</code><span>chunk_<wbr/>request_<wbr/>retry_<wbr/>period</span><a href="#chunk_request_retry_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chunk_request_retry_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>Time between checking to re-request chunks.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4506">src/rpc/types.gen.ts:4506</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4506">src/rpc/types.gen.ts:4506</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chunk_validation_threads"><code class="tsd-tag">Optional</code><span>chunk_<wbr/>validation_<wbr/>threads</span><a href="#chunk_validation_threads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chunk_validation_threads</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Number of threads for ChunkValidationActor pool.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4510">src/rpc/types.gen.ts:4510</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4510">src/rpc/types.gen.ts:4510</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chunk_wait_mult"><code class="tsd-tag">Optional</code><span>chunk_<wbr/>wait_<wbr/>mult</span><a href="#chunk_wait_mult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chunk_wait_mult</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Multiplier for the wait time for all chunks to be received.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4514">src/rpc/types.gen.ts:4514</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4514">src/rpc/types.gen.ts:4514</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="chunks_cache_height_horizon"><code class="tsd-tag">Optional</code><span>chunks_<wbr/>cache_<wbr/>height_<wbr/>horizon</span><a href="#chunks_cache_height_horizon" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">chunks_cache_height_horizon</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -181,14 +181,14 @@ if its height + chunks_cache_height_horizon &lt; largest_seen_height.
 The default value is given by default_chunks_cache_height_horizon().</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4520">src/rpc/types.gen.ts:4520</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4520">src/rpc/types.gen.ts:4520</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="client_background_migration_threads"><code class="tsd-tag">Optional</code><span>client_<wbr/>background_<wbr/>migration_<wbr/>threads</span><a href="#client_background_migration_threads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">client_background_migration_threads</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Number of threads to execute background migration work in client.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4524">src/rpc/types.gen.ts:4524</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4524">src/rpc/types.gen.ts:4524</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="cloud_archival_writer"><code class="tsd-tag">Optional</code><span>cloud_<wbr/>archival_<wbr/>writer</span><a href="#cloud_archival_writer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">cloud_archival_writer</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.CloudArchivalWriterConfig.html" class="tsd-signature-type tsd-kind-type-alias">CloudArchivalWriterConfig</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -196,21 +196,21 @@ The default value is given by default_chunks_cache_height_horizon().</p>
 writes chunk-related data based on the tracked shards.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4529">src/rpc/types.gen.ts:4529</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4529">src/rpc/types.gen.ts:4529</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="disable_tx_routing"><code class="tsd-tag">Optional</code><span>disable_<wbr/>tx_<wbr/>routing</span><a href="#disable_tx_routing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">disable_tx_routing</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>If true, the node won't forward transactions to next the chunk producers.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4533">src/rpc/types.gen.ts:4533</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4533">src/rpc/types.gen.ts:4533</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="doomslug_step_period"><code class="tsd-tag">Optional</code><span>doomslug_<wbr/>step_<wbr/>period</span><a href="#doomslug_step_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">doomslug_step_period</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Time between running doomslug timer.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4537">src/rpc/types.gen.ts:4537</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4537">src/rpc/types.gen.ts:4537</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="enable_early_prepare_transactions"><code class="tsd-tag">Optional</code><span>enable_<wbr/>early_<wbr/>prepare_<wbr/>transactions</span><a href="#enable_early_prepare_transactions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">enable_early_prepare_transactions</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -220,103 +220,103 @@ The current implementation increases latency on low-load chains, which will be f
 The default is disabled.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4544">src/rpc/types.gen.ts:4544</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4544">src/rpc/types.gen.ts:4544</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="enable_multiline_logging"><code class="tsd-tag">Optional</code><span>enable_<wbr/>multiline_<wbr/>logging</span><a href="#enable_multiline_logging" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">enable_multiline_logging</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4545">src/rpc/types.gen.ts:4545</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4545">src/rpc/types.gen.ts:4545</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="enable_statistics_export"><code class="tsd-tag">Optional</code><span>enable_<wbr/>statistics_<wbr/>export</span><a href="#enable_statistics_export" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">enable_statistics_export</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Re-export storage layer statistics as prometheus metrics.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4549">src/rpc/types.gen.ts:4549</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4549">src/rpc/types.gen.ts:4549</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="epoch_length"><code class="tsd-tag">Optional</code><span>epoch_<wbr/>length</span><a href="#epoch_length" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">epoch_length</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Epoch length.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4553">src/rpc/types.gen.ts:4553</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4553">src/rpc/types.gen.ts:4553</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="epoch_sync"><code class="tsd-tag">Optional</code><span>epoch_<wbr/>sync</span><a href="#epoch_sync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">epoch_sync</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.EpochSyncConfig.html" class="tsd-signature-type tsd-kind-type-alias">EpochSyncConfig</a></div>
 <div class="tsd-comment tsd-typography"><p>Options for epoch sync.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4557">src/rpc/types.gen.ts:4557</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4557">src/rpc/types.gen.ts:4557</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="expected_shutdown"><code class="tsd-tag">Optional</code><span>expected_<wbr/>shutdown</span><a href="#expected_shutdown" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">expected_shutdown</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Graceful shutdown at expected block height.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4561">src/rpc/types.gen.ts:4561</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4561">src/rpc/types.gen.ts:4561</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="gc"><code class="tsd-tag">Optional</code><span>gc</span><a href="#gc" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">gc</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.GcConfig.html" class="tsd-signature-type tsd-kind-type-alias">GcConfig</a></div>
 <div class="tsd-comment tsd-typography"><p>Garbage collection configuration.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4565">src/rpc/types.gen.ts:4565</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4565">src/rpc/types.gen.ts:4565</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="header_sync_expected_height_per_second"><code class="tsd-tag">Optional</code><span>header_<wbr/>sync_<wbr/>expected_<wbr/>height_<wbr/>per_<wbr/>second</span><a href="#header_sync_expected_height_per_second" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">header_sync_expected_height_per_second</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Expected increase of header head height per second during header sync</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4569">src/rpc/types.gen.ts:4569</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4569">src/rpc/types.gen.ts:4569</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="header_sync_initial_timeout"><code class="tsd-tag">Optional</code><span>header_<wbr/>sync_<wbr/>initial_<wbr/>timeout</span><a href="#header_sync_initial_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">header_sync_initial_timeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How much time to wait after initial header sync</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4573">src/rpc/types.gen.ts:4573</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4573">src/rpc/types.gen.ts:4573</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="header_sync_progress_timeout"><code class="tsd-tag">Optional</code><span>header_<wbr/>sync_<wbr/>progress_<wbr/>timeout</span><a href="#header_sync_progress_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">header_sync_progress_timeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How much time to wait after some progress is made in header sync</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4577">src/rpc/types.gen.ts:4577</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4577">src/rpc/types.gen.ts:4577</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="header_sync_stall_ban_timeout"><code class="tsd-tag">Optional</code><span>header_<wbr/>sync_<wbr/>stall_<wbr/>ban_<wbr/>timeout</span><a href="#header_sync_stall_ban_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">header_sync_stall_ban_timeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How much time to wait before banning a peer in header sync if sync is too slow</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4581">src/rpc/types.gen.ts:4581</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4581">src/rpc/types.gen.ts:4581</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="log_summary_period"><code class="tsd-tag">Optional</code><span>log_<wbr/>summary_<wbr/>period</span><a href="#log_summary_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">log_summary_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>Period between logging summary information.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4585">src/rpc/types.gen.ts:4585</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4585">src/rpc/types.gen.ts:4585</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="log_summary_style"><code class="tsd-tag">Optional</code><span>log_<wbr/>summary_<wbr/>style</span><a href="#log_summary_style" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">log_summary_style</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.LogSummaryStyle.html" class="tsd-signature-type tsd-kind-type-alias">LogSummaryStyle</a></div>
 <div class="tsd-comment tsd-typography"><p>Enable coloring of the logs</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4589">src/rpc/types.gen.ts:4589</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4589">src/rpc/types.gen.ts:4589</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_block_production_delay"><code class="tsd-tag">Optional</code><span>max_<wbr/>block_<wbr/>production_<wbr/>delay</span><a href="#max_block_production_delay" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_block_production_delay</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Maximum wait for approvals before producing block.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4593">src/rpc/types.gen.ts:4593</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4593">src/rpc/types.gen.ts:4593</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_block_wait_delay"><code class="tsd-tag">Optional</code><span>max_<wbr/>block_<wbr/>wait_<wbr/>delay</span><a href="#max_block_wait_delay" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_block_wait_delay</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Maximum duration before skipping given height.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4597">src/rpc/types.gen.ts:4597</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4597">src/rpc/types.gen.ts:4597</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="max_gas_burnt_view"><code class="tsd-tag">Optional</code><span>max_<wbr/>gas_<wbr/>burnt_<wbr/>view</span><a href="#max_gas_burnt_view" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">max_gas_burnt_view</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.NearGas.html" class="tsd-signature-type tsd-kind-type-alias">NearGas</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -325,28 +325,28 @@ genesis file.  The value only affects the RPCs without influencing the
 protocol thus changing it per-node doesn’t affect the blockchain.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4603">src/rpc/types.gen.ts:4603</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4603">src/rpc/types.gen.ts:4603</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="min_block_production_delay"><code class="tsd-tag">Optional</code><span>min_<wbr/>block_<wbr/>production_<wbr/>delay</span><a href="#min_block_production_delay" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">min_block_production_delay</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div>
 <div class="tsd-comment tsd-typography"><p>Minimum duration before producing block.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4607">src/rpc/types.gen.ts:4607</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4607">src/rpc/types.gen.ts:4607</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="min_num_peers"><code class="tsd-tag">Optional</code><span>min_<wbr/>num_<wbr/>peers</span><a href="#min_num_peers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">min_num_peers</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Minimum number of peers to start syncing.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4611">src/rpc/types.gen.ts:4611</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4611">src/rpc/types.gen.ts:4611</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="num_block_producer_seats"><code class="tsd-tag">Optional</code><span>num_<wbr/>block_<wbr/>producer_<wbr/>seats</span><a href="#num_block_producer_seats" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">num_block_producer_seats</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Number of block producer seats</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4615">src/rpc/types.gen.ts:4615</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4615">src/rpc/types.gen.ts:4615</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="orphan_state_witness_max_size"><code class="tsd-tag">Optional</code><span>orphan_<wbr/>state_<wbr/>witness_<wbr/>max_<wbr/>size</span><a href="#orphan_state_witness_max_size" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">orphan_state_witness_max_size</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -355,7 +355,7 @@ protocol thus changing it per-node doesn’t affect the blockchain.</p>
 This limits the maximum memory usage of OrphanStateWitnessPool.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4622">src/rpc/types.gen.ts:4622</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4622">src/rpc/types.gen.ts:4622</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="orphan_state_witness_pool_size"><code class="tsd-tag">Optional</code><span>orphan_<wbr/>state_<wbr/>witness_<wbr/>pool_<wbr/>size</span><a href="#orphan_state_witness_pool_size" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">orphan_state_witness_pool_size</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -364,7 +364,7 @@ because the previous block isn't available. The witnesses wait in the pool until
 required block appears. This variable controls how many witnesses can be stored in the pool.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4628">src/rpc/types.gen.ts:4628</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4628">src/rpc/types.gen.ts:4628</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="produce_chunk_add_transactions_time_limit"><code class="tsd-tag">Optional</code><span>produce_<wbr/>chunk_<wbr/>add_<wbr/>transactions_<wbr/>time_<wbr/>limit</span><a href="#produce_chunk_add_transactions_time_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">produce_chunk_add_transactions_time_limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
@@ -374,14 +374,14 @@ some limit is reached. This time limit ensures that adding transactions won't ta
 longer than the specified duration, which helps to produce the chunk quickly.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4635">src/rpc/types.gen.ts:4635</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4635">src/rpc/types.gen.ts:4635</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="produce_empty_blocks"><code class="tsd-tag">Optional</code><span>produce_<wbr/>empty_<wbr/>blocks</span><a href="#produce_empty_blocks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">produce_empty_blocks</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Produce empty blocks, use <code>false</code> for testing.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4639">src/rpc/types.gen.ts:4639</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4639">src/rpc/types.gen.ts:4639</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="protocol_version_check"><code class="tsd-tag">Optional</code><span>protocol_<wbr/>version_<wbr/>check</span><a href="#protocol_version_check" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">protocol_version_check</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.ProtocolVersionCheckConfig.html" class="tsd-signature-type tsd-kind-type-alias">ProtocolVersionCheckConfig</a></div>
@@ -389,7 +389,7 @@ longer than the specified duration, which helps to produce the chunk quickly.</p
 for the next or next next epoch.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4644">src/rpc/types.gen.ts:4644</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4644">src/rpc/types.gen.ts:4644</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="receipt_to_tx_max_hint_window"><code class="tsd-tag">Optional</code><span>receipt_<wbr/>to_<wbr/>tx_<wbr/>max_<wbr/>hint_<wbr/>window</span><a href="#receipt_to_tx_max_hint_window" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">receipt_to_tx_max_hint_window</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -402,7 +402,7 @@ matches caller's wider hint scope. Requests with <code>window</code> over this
 rejected with <code>WindowTooLarge</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4654">src/rpc/types.gen.ts:4654</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4654">src/rpc/types.gen.ts:4654</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="receipt_to_tx_max_hop_distance"><code class="tsd-tag">Optional</code><span>receipt_<wbr/>to_<wbr/>tx_<wbr/>max_<wbr/>hop_<wbr/>distance</span><a href="#receipt_to_tx_max_hop_distance" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">receipt_to_tx_max_hop_distance</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -417,7 +417,7 @@ with missing column row (column hits don't reset anchor). Default
 20 (matches <code>receipt_to_tx_max_hint_window</code>).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4666">src/rpc/types.gen.ts:4666</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4666">src/rpc/types.gen.ts:4666</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="receipt_to_tx_max_outcomes_per_request"><code class="tsd-tag">Optional</code><span>receipt_<wbr/>to_<wbr/>tx_<wbr/>max_<wbr/>outcomes_<wbr/>per_<wbr/>request</span><a href="#receipt_to_tx_max_outcomes_per_request" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">receipt_to_tx_max_outcomes_per_request</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -430,19 +430,19 @@ outcomes may raise; benchmark first (see TODO in
 <code>BudgetExceeded { scanned, limit }</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4676">src/rpc/types.gen.ts:4676</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4676">src/rpc/types.gen.ts:4676</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resharding_config"><code class="tsd-tag">Optional</code><span>resharding_<wbr/>config</span><a href="#resharding_config" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resharding_config</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.MutableConfigValue.html" class="tsd-signature-type tsd-kind-type-alias">MutableConfigValue</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4677">src/rpc/types.gen.ts:4677</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4677">src/rpc/types.gen.ts:4677</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rpc_addr"><code class="tsd-tag">Optional</code><span>rpc_<wbr/>addr</span><a href="#rpc_addr" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rpc_addr</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>Listening rpc port for status.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4681">src/rpc/types.gen.ts:4681</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4681">src/rpc/types.gen.ts:4681</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_invalid_witnesses"><code class="tsd-tag">Optional</code><span>save_<wbr/>invalid_<wbr/>witnesses</span><a href="#save_invalid_witnesses" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_invalid_witnesses</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -451,7 +451,7 @@ Saving invalid witnesses is useful for analysis and debugging.
 This option can cause extra load on the database and is not recommended for production use.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4687">src/rpc/types.gen.ts:4687</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4687">src/rpc/types.gen.ts:4687</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_latest_witnesses"><code class="tsd-tag">Optional</code><span>save_<wbr/>latest_<wbr/>witnesses</span><a href="#save_latest_witnesses" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_latest_witnesses</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -460,21 +460,21 @@ Saving the latest witnesses is useful for analysis and debugging.
 This option can cause extra load on the database and is not recommended for production use.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4693">src/rpc/types.gen.ts:4693</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4693">src/rpc/types.gen.ts:4693</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_receipt_to_tx"><code class="tsd-tag">Optional</code><span>save_<wbr/>receipt_<wbr/>to_<wbr/>tx</span><a href="#save_receipt_to_tx" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_receipt_to_tx</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Whether to persist receipt-to-tx origin mappings to disk or not.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4697">src/rpc/types.gen.ts:4697</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4697">src/rpc/types.gen.ts:4697</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_state_changes"><code class="tsd-tag">Optional</code><span>save_<wbr/>state_<wbr/>changes</span><a href="#save_state_changes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_state_changes</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Whether to persist state changes on disk or not.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4701">src/rpc/types.gen.ts:4701</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4701">src/rpc/types.gen.ts:4701</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_trie_changes"><code class="tsd-tag">Optional</code><span>save_<wbr/>trie_<wbr/>changes</span><a href="#save_trie_changes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_trie_changes</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -486,35 +486,35 @@ working in split storage mode needs trie changes in order to do garbage collecti
 </ul>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4708">src/rpc/types.gen.ts:4708</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4708">src/rpc/types.gen.ts:4708</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_tx_outcomes"><code class="tsd-tag">Optional</code><span>save_<wbr/>tx_<wbr/>outcomes</span><a href="#save_tx_outcomes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_tx_outcomes</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Whether to persist transaction outcomes to disk or not.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4712">src/rpc/types.gen.ts:4712</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4712">src/rpc/types.gen.ts:4712</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="save_untracked_partial_chunks_parts"><code class="tsd-tag">Optional</code><span>save_<wbr/>untracked_<wbr/>partial_<wbr/>chunks_<wbr/>parts</span><a href="#save_untracked_partial_chunks_parts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">save_untracked_partial_chunks_parts</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Whether to persist partial chunk parts for untracked shards or not.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4716">src/rpc/types.gen.ts:4716</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4716">src/rpc/types.gen.ts:4716</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="skip_sync_wait"><code class="tsd-tag">Optional</code><span>skip_<wbr/>sync_<wbr/>wait</span><a href="#skip_sync_wait" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">skip_sync_wait</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p>Skip waiting for sync (for testing or single node testnet).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4720">src/rpc/types.gen.ts:4720</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4720">src/rpc/types.gen.ts:4720</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state_request_server_threads"><code class="tsd-tag">Optional</code><span>state_<wbr/>request_<wbr/>server_<wbr/>threads</span><a href="#state_request_server_threads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state_request_server_threads</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Number of threads for StateRequestActor pool.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4724">src/rpc/types.gen.ts:4724</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4724">src/rpc/types.gen.ts:4724</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state_request_throttle_period"><code class="tsd-tag">Optional</code><span>state_<wbr/>request_<wbr/>throttle_<wbr/>period</span><a href="#state_request_throttle_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state_request_throttle_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
@@ -522,68 +522,68 @@ working in split storage mode needs trie changes in order to do garbage collecti
 Throttling window for state requests (headers and parts).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4729">src/rpc/types.gen.ts:4729</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4729">src/rpc/types.gen.ts:4729</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state_requests_per_throttle_period"><code class="tsd-tag">Optional</code><span>state_<wbr/>requests_<wbr/>per_<wbr/>throttle_<wbr/>period</span><a href="#state_requests_per_throttle_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state_requests_per_throttle_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Maximum number of state requests served per throttle period</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4733">src/rpc/types.gen.ts:4733</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4733">src/rpc/types.gen.ts:4733</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state_sync"><code class="tsd-tag">Optional</code><span>state_<wbr/>sync</span><a href="#state_sync" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state_sync</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.StateSyncConfig.html" class="tsd-signature-type tsd-kind-type-alias">StateSyncConfig</a></div>
 <div class="tsd-comment tsd-typography"><p>Options for syncing state.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4737">src/rpc/types.gen.ts:4737</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4737">src/rpc/types.gen.ts:4737</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state_sync_p2p_timeout"><code class="tsd-tag">Optional</code><span>state_<wbr/>sync_<wbr/>p2p_<wbr/>timeout</span><a href="#state_sync_p2p_timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state_sync_p2p_timeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How long to wait for a response from p2p state sync</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4741">src/rpc/types.gen.ts:4741</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4741">src/rpc/types.gen.ts:4741</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state_sync_retry_backoff"><code class="tsd-tag">Optional</code><span>state_<wbr/>sync_<wbr/>retry_<wbr/>backoff</span><a href="#state_sync_retry_backoff" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state_sync_retry_backoff</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How long to wait after a failed state sync request</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4745">src/rpc/types.gen.ts:4745</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4745">src/rpc/types.gen.ts:4745</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sync_check_period"><code class="tsd-tag">Optional</code><span>sync_<wbr/>check_<wbr/>period</span><a href="#sync_check_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sync_check_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>How often to check that we are not out of sync.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4749">src/rpc/types.gen.ts:4749</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4749">src/rpc/types.gen.ts:4749</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sync_height_threshold"><code class="tsd-tag">Optional</code><span>sync_<wbr/>height_<wbr/>threshold</span><a href="#sync_height_threshold" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sync_height_threshold</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Sync height threshold: below this difference in height don't start syncing.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4753">src/rpc/types.gen.ts:4753</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4753">src/rpc/types.gen.ts:4753</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sync_max_block_requests"><code class="tsd-tag">Optional</code><span>sync_<wbr/>max_<wbr/>block_<wbr/>requests</span><a href="#sync_max_block_requests" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sync_max_block_requests</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Maximum number of block requests to send to peers to sync</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4757">src/rpc/types.gen.ts:4757</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4757">src/rpc/types.gen.ts:4757</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sync_step_period"><code class="tsd-tag">Optional</code><span>sync_<wbr/>step_<wbr/>period</span><a href="#sync_step_period" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">sync_step_period</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>While syncing, how long to check for each step.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4761">src/rpc/types.gen.ts:4761</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4761">src/rpc/types.gen.ts:4761</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tracked_shards_config"><code class="tsd-tag">Optional</code><span>tracked_<wbr/>shards_<wbr/>config</span><a href="#tracked_shards_config" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tracked_shards_config</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.TrackedShardsConfig.html" class="tsd-signature-type tsd-kind-type-alias">TrackedShardsConfig</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4762">src/rpc/types.gen.ts:4762</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4762">src/rpc/types.gen.ts:4762</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="transaction_pool_size_limit"><code class="tsd-tag">Optional</code><span>transaction_<wbr/>pool_<wbr/>size_<wbr/>limit</span><a href="#transaction_pool_size_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">transaction_pool_size_limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -591,7 +591,7 @@ Throttling window for state requests (headers and parts).</p>
 will be unbounded.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4767">src/rpc/types.gen.ts:4767</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4767">src/rpc/types.gen.ts:4767</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="transaction_pool_strict_nonce_ttl_blocks"><code class="tsd-tag">Optional</code><span>transaction_<wbr/>pool_<wbr/>strict_<wbr/>nonce_<wbr/>ttl_<wbr/>blocks</span><a href="#transaction_pool_strict_nonce_ttl_blocks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">transaction_pool_strict_nonce_ttl_blocks</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -600,26 +600,26 @@ nonce gap whose block_hash is older than this many blocks are evicted during
 prepare_transactions.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4773">src/rpc/types.gen.ts:4773</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4773">src/rpc/types.gen.ts:4773</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="transaction_request_handler_threads"><code class="tsd-tag">Optional</code><span>transaction_<wbr/>request_<wbr/>handler_<wbr/>threads</span><a href="#transaction_request_handler_threads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">transaction_request_handler_threads</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4774">src/rpc/types.gen.ts:4774</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4774">src/rpc/types.gen.ts:4774</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="trie_viewer_state_size_limit"><code class="tsd-tag">Optional</code><span>trie_<wbr/>viewer_<wbr/>state_<wbr/>size_<wbr/>limit</span><a href="#trie_viewer_state_size_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">trie_viewer_state_size_limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>Upper bound of the byte size of contract state that is still viewable. None is no limit</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4778">src/rpc/types.gen.ts:4778</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4778">src/rpc/types.gen.ts:4778</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="ttl_account_id_router"><code class="tsd-tag">Optional</code><span>ttl_<wbr/>account_<wbr/>id_<wbr/>router</span><a href="#ttl_account_id_router" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">ttl_account_id_router</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span></div>
 <div class="tsd-comment tsd-typography"><p>Time to persist Accounts Id in the router without removing them.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4782">src/rpc/types.gen.ts:4782</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4782">src/rpc/types.gen.ts:4782</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tx_routing_height_horizon"><code class="tsd-tag">Optional</code><span>tx_<wbr/>routing_<wbr/>height_<wbr/>horizon</span><a href="#tx_routing_height_horizon" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tx_routing_height_horizon</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -627,14 +627,14 @@ prepare_transactions.</p>
 to upcoming chunk producers.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4787">src/rpc/types.gen.ts:4787</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4787">src/rpc/types.gen.ts:4787</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="version"><code class="tsd-tag">Optional</code><span>version</span><a href="#version" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">version</span><span class="tsd-signature-symbol">?:</span> <a href="rpc_types.gen.Version.html" class="tsd-signature-type tsd-kind-type-alias">Version</a></div>
 <div class="tsd-comment tsd-typography"><p>Version of the binary.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4791">src/rpc/types.gen.ts:4791</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4791">src/rpc/types.gen.ts:4791</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="view_access_keys_limit"><code class="tsd-tag">Optional</code><span>view_<wbr/>access_<wbr/>keys_<wbr/>limit</span><a href="#view_access_keys_limit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">view_access_keys_limit</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -642,14 +642,14 @@ to upcoming chunk producers.</p>
 query.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4796">src/rpc/types.gen.ts:4796</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4796">src/rpc/types.gen.ts:4796</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="view_client_threads"><code class="tsd-tag">Optional</code><span>view_<wbr/>client_<wbr/>threads</span><a href="#view_client_threads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">view_client_threads</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Number of threads for ViewClientActor pool.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/near/near-api-js/blob/30c8e13b3692e5a6ba51acd2b4015734972d38ab/src/rpc/types.gen.ts#L4800">src/rpc/types.gen.ts:4800</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/near/near-api-js/blob/38ffe5a6292bf4498b05966635a72f3ba25aa4bf/src/rpc/types.gen.ts#L4800">src/rpc/types.gen.ts:4800</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
