@@ -107,6 +107,7 @@ export class HostEmptyMethodNameError extends ContractExecutionError {
         super('Empty method name', blockHash, blockHeight);
     }
 }
+/** A nearcore `HostError::GuestPanic`, including its flattened `ExecutionError` representation. */
 export class HostGuestPanicError extends ContractExecutionError {
     constructor(
         public readonly panicMessage: string,
