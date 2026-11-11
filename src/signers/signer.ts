@@ -54,6 +54,8 @@ export abstract class Signer {
      *
      * @param accountId - The account name to which the public key corresponds (e.g. "alice.near").
      * @param params - The parameters including message, recipient, nonce, and optional callbackUrl.
+     * @returns The account ID, public key, and raw signature bytes; no transaction is submitted.
+     * @throws If the nonce is not exactly 32 bytes or signing fails.
      */
     public async signNep413Message(accountId: string, params: MessagePayload): Promise<SignedMessage> {
         if (params.nonce.length !== 32) throw new Error('Nonce must be exactly 32 bytes long');
@@ -72,7 +74,8 @@ export abstract class Signer {
     /**
      * Signs given transaction.
      * @param transaction - The transaction to sign.
-     * @returns {Promise<[Uint8Array, SignedTransaction]>} - Promise of the hash that can be verified and signed transaction.
+     * @returns An object containing `txHash` (raw hash bytes) and `signedTransaction`. Does not submit it.
+     * @throws If the transaction's public key differs from the signer's public key, or signing fails.
      */
     public async signTransaction(transaction: Transaction): Promise<SignTransactionReturn> {
         const pk = await this.getPublicKey();
@@ -97,7 +100,7 @@ export abstract class Signer {
     /**
      * Signs given delegate action.
      * @param delegateAction - The delegate action to sign.
-     * @returns {Promise<[Uint8Array, SignedDelegate]>} - Promise of the hash that can be verified and signed delegate action.
+     * @returns An object containing `delegateHash` (raw hash bytes) and `signedDelegate`. Does not relay it.
      */
     public async signDelegateAction(delegateAction: DelegateAction): Promise<SignDelegateActionReturn> {
         const pk = await this.getPublicKey();

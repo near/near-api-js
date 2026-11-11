@@ -30,6 +30,9 @@ export function encodeSignedDelegate(signedDelegate: SignedDelegate) {
 /**
  * Decode a complete Borsh signed delegate, restoring its delegate, public key and signature instances.
  * Action payloads remain plain data. This does not verify the signature or chain validity.
+ * @param bytes - Exactly one canonical Borsh-encoded signed delegate.
+ * @returns A signed delegate that can be inspected or re-encoded.
+ * @throws If decoding fails, actions contain nested/reserved delegates, or the bytes are noncanonical.
  */
 export function decodeSignedDelegate(bytes: Uint8Array): SignedDelegate {
     const { delegateAction, signature } = deserialize(SCHEMA.SignedDelegate, bytes) as {
@@ -90,6 +93,7 @@ export function encodeTransaction(transaction: Transaction | SignedTransaction) 
 /**
  * Borsh-decode a Transaction instance from a buffer
  * @param bytes Uint8Array data to be decoded
+ * @returns A V0 or V1 transaction, selected from its encoding. Does not verify chain validity.
  */
 export function decodeTransaction(bytes: Uint8Array) {
     if (bytes[0] !== TRANSACTION_V1_PREFIX) {
@@ -101,6 +105,8 @@ export function decodeTransaction(bytes: Uint8Array) {
 /**
  * Borsh-decode a SignedTransaction instance from a buffer
  * @param bytes Uint8Array data to be decoded
+ * @returns A signed V0 or V1 transaction, restoring its public key and signature instances.
+ * Does not verify the signature or chain validity.
  */
 export function decodeSignedTransaction(bytes: Uint8Array) {
     if (bytes[0] !== TRANSACTION_V1_PREFIX) {

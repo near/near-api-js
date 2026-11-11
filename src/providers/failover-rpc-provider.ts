@@ -2,7 +2,7 @@
  * @module
  * This module contains the {@link FailoverRpcProvider} client class
  * which can be used to interact with multiple [NEAR RPC APIs](https://docs.near.org/api/rpc/introduction).
- * @see {@link "@near-js/types".provider | provider} for a list of request and response types
+ * @see {@link FailoverRpcProvider} for provider selection and failure behavior.
  */
 
 import type { CryptoHash, RpcQueryRequest, RpcQueryResponse } from '../rpc/index.js';
@@ -47,8 +47,12 @@ export class FailoverRpcError extends TypedError {
 }
 
 /**
- * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
+ * Wraps multiple providers and tries the next provider whenever a delegated call rejects.
+ * Each provider is attempted at most once per operation, in addition to that provider's own retry policy.
+ * The last successful provider remains selected for subsequent calls; successful falsy results do not trigger failover.
+ * @remarks Providers should target the same network. Failover does not guarantee that successive reads
+ * observe the same block height, and submission to another endpoint can resend the same signed transaction.
+ * If every provider rejects, throws {@link FailoverRpcError}, retaining the errors in attempt order.
  */
 export class FailoverRpcProvider implements Provider {
     /** @hidden */
@@ -57,7 +61,8 @@ export class FailoverRpcProvider implements Provider {
     private currentProviderIndex: number;
 
     /**
-     * @param providers list of providers
+     * @param providers - Nonempty list of providers, tried initially in the supplied order.
+     * @throws If the list is empty.
      */
     constructor(providers: Provider[]) {
         if (providers.length === 0) {
@@ -190,19 +195,19 @@ export class FailoverRpcProvider implements Provider {
     }
 
     /**
-     * Sends a signed transaction to the RPC and waits until transaction is fully complete
-     * @see [https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
+     * Submits a signed transaction through the selected provider, failing over if the call rejects.
      *
-     * @param signedTransaction The signed transaction being sent
+     * @param signedTransaction - Signed transaction to submit.
+     * @returns The underlying provider's response; JsonRpcProvider waits for `EXECUTED_OPTIMISTIC`, not finality.
      */
     async sendTransaction(signedTransaction: SignedTransaction) {
         return this.withBackoff((currentProvider) => currentProvider.sendTransaction(signedTransaction));
     }
 
     /**
-     * Sends a signed transaction to the RPC and immediately returns transaction hash
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-async)
-     * @param signedTransaction The signed transaction being sent
+     * Submits without waiting for execution through the selected provider, failing over if the call rejects.
+     * @param signedTransaction - Signed transaction to submit.
+     * @returns The underlying provider's immediate response. JsonRpcProvider uses `send_tx` with `NONE`, not a hash-only response.
      */
     async sendTransactionAsync(signedTransaction: SignedTransaction) {
         return this.withBackoff((currentProvider) => currentProvider.sendTransactionAsync(signedTransaction));

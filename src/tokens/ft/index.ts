@@ -22,8 +22,10 @@ abstract class BaseFT {
     /**
      * Converts a decimal number to indivisible units
      *
-     * @param amount The amount in decimal format (e.g. "1.234")
-     * @returns The amount in indivisible units (e.g. "1234")
+     * @param amount - Decimal token amount. Prefer a string to avoid number precision loss.
+     * @returns The amount in the token's smallest units, using `metadata.decimals`.
+     * Fractional digits beyond the token's precision are truncated, not rounded.
+     * @throws If the input cannot be parsed or exceeds the parser's maximum of 24 fractional digits.
      */
     public toUnits(amount: string | number): bigint {
         const units = parseAmount(amount.toString(), this.metadata.decimals);
@@ -34,7 +36,7 @@ abstract class BaseFT {
      * Converts indivisible units to a decimal number (represented as a string)
      *
      * @param amount The amount in indivisible units (e.g. "1234")
-     * @param precision (optional) number of digits shown to the right of the decimal point - rounded down
+     * @param precision - Maximum fractional digits, truncated without rounding. Defaults to `metadata.decimals`.
      * @returns The amount as a decimal string (e.g. "1.234")
      */
     public toDecimal(amount: bigint | string | number, precision?: number): string {
@@ -45,7 +47,7 @@ abstract class BaseFT {
      * Get the available balance of an account in indivisible units
      *
      * @param account The account to get the balance of
-     * @returns
+     * @returns The available balance in the token's smallest units as a bigint.
      */
     abstract getBalance(account: Account): Promise<bigint>;
 
@@ -101,6 +103,14 @@ export class FungibleToken extends BaseFT {
         this.accountId = accountId;
     }
 
+    /**
+     * Calls `ft_transfer` with 30 TGas and a deposit of 1 yoctoNEAR, paid by the sender.
+     * @param params - Transfer options.
+     * @param params.from - Account with a signer authorizing the transfer.
+     * @param params.receiverId - Account receiving the tokens; must already be registered with the token contract.
+     * @param params.amount - Integer amount in the token's smallest units, not a decimal token amount.
+     * @returns The decoded `ft_transfer` result. Use `Account.transfer` if automatic receiver registration is needed.
+     */
     public async transfer({
         from,
         receiverId,
@@ -140,6 +150,8 @@ export class FungibleToken extends BaseFT {
      * @param param.receiverId The AccountID that will receive the tokens
      * @param param.amount The amount of tokens to transfer in the smallest unit
      * @param param.msg The message to send to the `ft_on_transfer` method
+     * @returns The decoded `ft_transfer_call` result after the receiver/resolver flow executes.
+     * @remarks Attaches 1 yoctoNEAR and 30 TGas. Does not register the receiver automatically.
      */
     public async transferCall({
         from,
@@ -171,6 +183,9 @@ export class FungibleToken extends BaseFT {
      * @param param
      * @param param.accountIdToRegister The AccountID to register
      * @param param.fundingAccount The Account that will fund the registration
+     * @returns The decoded storage registration result.
+     * @remarks Queries `storage_balance_bounds` and attaches its minimum deposit in yoctoNEAR
+     * with `registration_only: true`. This submits a separate transaction and spends the funding account's NEAR.
      */
     public async registerAccount({
         accountIdToRegister,
@@ -200,11 +215,12 @@ export class FungibleToken extends BaseFT {
     }
 
     /**
-     * Unregister an account from the fungible token contract by paying a storage deposit
+     * Calls `storage_unregister` with a deposit of 1 yoctoNEAR and 30 TGas.
      *
      * @param param
      * @param param.account The Account to unregister
-     * @param param.force Whether to remove the account without claiming the storage deposit
+     * @param param.force - Whether to allow the contract to remove a nonzero token balance. Defaults to false.
+     * @returns The decoded unregister result. The token contract controls storage refunds and handling of token balances.
      */
     public async unregisterAccount({ account, force = false }: { account: Account; force: boolean }): Promise<any> {
         return account.callFunction({

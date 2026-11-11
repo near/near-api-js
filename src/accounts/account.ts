@@ -161,6 +161,12 @@ export class Account {
     private signer?: Signer;
     private readonly nonceManager: NonceManager;
 
+    /**
+     * Creates a client for an account; does not create the account on-chain.
+     * @param accountId - Account to query or sign transactions for.
+     * @param provider - RPC provider instance or endpoint URL.
+     * @param signer - Optional signer or curve-prefixed secret key. Read-only operations do not require one.
+     */
     constructor(accountId: string, provider: Provider | string, signer?: Signer | KeyPairString) {
         this.accountId = accountId;
         if (typeof provider === 'string') {
@@ -302,6 +308,8 @@ export class Account {
      * @param options.receiverId Account against which to perform the actions
      * @param options.actions Actions to perform
      * @param options.publicKey The public part of the key that will be used to sign the transaction
+     * @returns An unsigned transaction with a locally reserved nonce and a recent finalized block hash.
+     * Does not sign or submit it; creating another transaction may advance the local nonce reservation.
      */
     public async createTransaction({ receiverId, actions, publicKey }: CreateTransactionArgs) {
         if (!publicKey) throw new Error('Please provide a public key');
@@ -348,6 +356,12 @@ export class Account {
 
     /**
      * Create a signed transaction ready to be broadcast by a {@link Provider}
+     * @param options - Transaction options.
+     * @param options.receiverId - Account against which the actions execute.
+     * @param options.actions - Ordered actions to include.
+     * @param options.signer - Signer override. Defaults to the account's configured signer.
+     * @returns A signed transaction, without submitting it to the network.
+     * @throws If no signer is available, transaction construction fails, or signing fails.
      */
     public async createSignedTransaction({
         receiverId,
@@ -374,6 +388,9 @@ export class Account {
      * @param options.receiverId NEAR account receiving the transaction
      * @param options.actions list of actions to perform as part of the meta transaction
      * @param options.blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * Defaults to 200 blocks from the queried optimistic block height.
+     * @param options.publicKey - Key that will sign the delegate action.
+     * @returns An unsigned delegate action. Does not reserve a nonce locally or submit a transaction.
      */
     public async createMetaTransaction({
         receiverId,
@@ -412,6 +429,9 @@ export class Account {
      * @param options.receiverId NEAR account receiving the transaction
      * @param options.actions list of actions to perform as part of the meta transaction
      * @param options.blockHeightTtl number of blocks after which a meta transaction will expire if not processed
+     * Defaults to 200 blocks from the queried optimistic block height.
+     * @param options.signer - Signer override. Defaults to the account's configured signer.
+     * @returns An object containing `delegateHash` and `signedDelegate`, ready for a relayer.
      */
     public async createSignedMetaTransaction({
         receiverId,
@@ -437,8 +457,14 @@ export class Account {
      * @param options Sign and send transaction options
      * @param options.receiverId The NEAR account ID of the transaction receiver.
      * @param options.actions The list of actions to be performed in the transaction.
-     * @param options.throwOnFailure Whether to throw an error if the transaction fails.
-     *
+     * @param options.throwOnFailure - Whether to throw for an execution failure reported in the result. Defaults to true.
+     * @param options.waitUntil - Execution milestone to wait for. Defaults to `EXECUTED_OPTIMISTIC`.
+     * @param options.signer - Signer override. Defaults to the account's configured signer.
+     * @param options.retries - Number of retries after an invalid-nonce error. Defaults to 10.
+     * @returns The RPC transaction response at the requested execution milestone.
+     * @throws If signing or submission fails, or execution fails with `throwOnFailure` enabled.
+     * Execution errors include the RPC response in `transactionResult`.
+     * @see [Reading after a transaction](https://github.com/near/near-api-js#reading-after-a-transaction)
      */
     async signAndSendTransaction({
         receiverId,
@@ -496,6 +522,16 @@ export class Account {
         return result;
     }
 
+    /**
+     * Signs and submits multiple independent transactions concurrently.
+     * @param options - Batch submission options.
+     * @param options.transactions - Transactions to submit, each containing `receiverId` and `actions`.
+     * @param options.waitUntil - Execution milestone for each transaction. Defaults to `EXECUTED_OPTIMISTIC`.
+     * @param options.throwOnFailure - Whether an execution failure rejects the batch promise. Defaults to true.
+     * @param options.signer - Signer override. Defaults to the account's configured signer.
+     * @returns Responses in input order. The batch is not atomic: other transactions can succeed if one fails.
+     * @throws If the account has no configured signer or any individual submission rejects.
+     */
     async signAndSendTransactions({
         transactions,
         waitUntil = DEFAULT_WAIT_STATUS,
@@ -529,6 +565,9 @@ export class Account {
      * 2. Sub-accounts of the current account (e.g., `sub.ana.near`):
      *    - The new account ID must end with the current account ID
      *    - Example: If your account is `ana.near`, you can create `sub.ana.near`
+     *
+     * Creating `name.tla` outside this account's subtree calls `create_account` on the `tla` account;
+     * that account must implement the account-creation contract method.
      *
      * @param options Account creation options
      * @param options.newAccountId the new account to create (e.g. bob.near or sub.ana.near)
@@ -572,7 +611,7 @@ export class Account {
      * @param options Sub-account creation options
      * @param options.accountOrPrefix a prefix (e.g. `sub`) or the full sub-account (`sub.ana.near`)
      * @param options.publicKey the public part of the key that will control the account
-     * @param options.nearToTransfer how much NEAR to transfer to the account (default: 0)
+     * @param options.nearToTransfer - Initial balance in yoctoNEAR, not decimal NEAR. Defaults to 0.
      *
      */
     public async createSubAccount({ accountOrPrefix, publicKey, nearToTransfer = 0n }: CreateSubAccountArgs) {
@@ -652,7 +691,13 @@ export class Account {
         });
     }
 
-    /** Create or initialize a NEP-616 account. Deposit (yoctoNEAR) covers storage; excess is refunded. */
+    /**
+     * Creates or initializes a NEP-616 account at the ID derived from its state initialization.
+     * @param options - Initialization and funding options.
+     * @param options.stateInit - Global contract reference and raw initial storage used to derive the account ID.
+     * @param options.deposit - Storage deposit in yoctoNEAR. Defaults to 0; excess is refunded by the protocol.
+     * @returns The submitted transaction response. This account's signer pays for initialization.
+     */
     public async createDeterministicAccount({
         stateInit,
         deposit = 0n,
@@ -666,7 +711,14 @@ export class Account {
         });
     }
 
-    /** Initialize a protocol-88 universal account from canonical raw state-init bytes. */
+    /**
+     * Initializes a protocol-88 universal account at the ID derived from the supplied state-init bytes.
+     * @param options - Initialization and funding options.
+     * @param options.stateInit - Raw versioned state-init bytes, such as the result of `UniversalStateInit.encode()`.
+     * @param options.deposit - Deposit in yoctoNEAR. Defaults to 0.
+     * @returns The submitted transaction response. This account's signer pays for initialization.
+     * @remarks The bytes are forwarded unchanged; the node validates the state initialization.
+     */
     public async createUniversalAccount({
         stateInit,
         deposit = 0n,
@@ -681,13 +733,13 @@ export class Account {
     }
 
     /**
-     *
-     * @param options
+     * Adds an access key restricted to function calls on one contract.
+     * @param options - Key permission options.
      * @param options.publicKey The key to add to the account
      * @param options.contractId The contract that this key can call
-     * @param options.methodNames The methods this key is allowed to call
-     * @param options.allowance The amount of NEAR this key can expend in gas
-     * @returns
+     * @param options.methodNames - Allowed methods. Defaults to an empty list, allowing any method on that contract.
+     * @param options.allowance - Gas-spending allowance in yoctoNEAR. Defaults to 0.25 NEAR in yoctoNEAR.
+     * @returns The submitted add-key transaction response.
      */
     public async addFunctionCallAccessKey({
         publicKey,
@@ -732,7 +784,7 @@ export class Account {
      * @param options
      * @param options.publicKey The key to add to the account
      * @param options.contractId The contract that this key can call
-     * @param options.methodNames The methods this key is allowed to call
+     * @param options.methodNames - Allowed methods. Defaults to an empty list, allowing any method on that contract.
      * @param options.numNonces The number of independent nonce lanes (1-1024, default 1)
      */
     public async addFunctionCallGasKey({
@@ -791,10 +843,14 @@ export class Account {
      * @param params.contractId The contract in which to call the function
      * @param params.methodName The method that will be called
      * @param params.args Arguments, either as a valid JSON Object or a raw Uint8Array
-     * @param params.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
-     * @param params.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
-     * @param params.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
-     * @returns
+     * @param params.deposit - Attached deposit in yoctoNEAR, not decimal NEAR. Defaults to 0.
+     * @param params.gas - Gas units, not TGas. Defaults to 30 TGas expressed in gas units.
+     * @param params.waitUntil - Execution milestone to wait for. Defaults to `EXECUTED_OPTIMISTIC`.
+     * @typeParam T - Expected result type; no runtime result validation is performed.
+     * @returns The final success value decoded as JSON when possible, otherwise as a string.
+     * Returns `null` when no success value is available at the requested execution milestone.
+     * @throws If signing, submission, or transaction execution fails.
+     * @see {@link callFunctionRaw} for logs, receipt outcomes, and transaction metadata.
      */
     public async callFunction<T extends SerializedReturnValue>(params: CallFunctionArgs): Promise<T> {
         const outcome = await this.callFunctionRaw(params);
@@ -808,9 +864,11 @@ export class Account {
      * @param params.contractId The contract in which to call the function
      * @param params.methodName The method that will be called
      * @param params.args Arguments, either as a valid JSON Object or a raw Uint8Array
-     * @param params.deposit (optional) Amount of NEAR Tokens to attach to the call (default 0)
-     * @param params.gas (optional) Amount of GAS to use attach to the call (default 30TGas)
-     * @param params.waitUntil (optional) Transaction finality to wait for (default INCLUDED_FINAL)
+     * @param params.deposit - Attached deposit in yoctoNEAR, not decimal NEAR. Defaults to 0.
+     * @param params.gas - Gas units, not TGas. Defaults to 30 TGas expressed in gas units.
+     * @param params.waitUntil - Execution milestone to wait for. Defaults to `EXECUTED_OPTIMISTIC`.
+     * @returns The RPC transaction response, including execution logs and receipt outcomes when available.
+     * @throws If signing, submission, or transaction execution fails.
      */
     public async callFunctionRaw({
         contractId,
@@ -837,7 +895,7 @@ export class Account {
      * @param args.recipient Who will receive the message (e.g. auth.app.com)
      * @param args.nonce A challenge sent by the recipient
      * @param args.callbackUrl (optional) Deprecated parameter used only by browser wallets
-     * @returns
+     * @returns The signed message with account ID, public key, and raw signature bytes; no transaction is submitted.
      */
     public async signNep413Message({
         message,
@@ -856,7 +914,7 @@ export class Account {
     }
 
     /**
-     *
+     * Queries the token balance available to this account.
      * @param token The token to check the balance of. Defaults to Native NEAR.
      * @returns The available balance of the account in units (e.g. yoctoNEAR).
      */
@@ -869,6 +927,7 @@ export class Account {
      *
      * @param signedDelegate The signed delegate action to relay
      * @returns The transaction response from the relayed meta-transaction
+     * @remarks This account signs the outer transaction and pays its gas. The delegate sender authorizes the inner actions.
      */
     public async relayMetaTransaction(signedDelegate: SignedDelegate) {
         return this.signAndSendTransaction({
@@ -885,7 +944,9 @@ export class Account {
      * @param options.amount - The amount of tokens to transfer in units (e.g. yoctoNEAR).
      * @param options.receiverId - The NEAR account ID of the receiver.
      * @param options.token - The token to transfer. Defaults to Native NEAR.
-     *
+     * @returns The transfer transaction response.
+     * @remarks For fungible tokens, an unregistered receiver is first registered in a separate transaction
+     * funded by this account. Registration and transfer are not atomic.
      */
     public async transfer({ receiverId, amount, token = NEAR }: TransferArgs): Promise<RpcTransactionResponse> {
         if (token instanceof FungibleToken) {

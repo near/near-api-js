@@ -289,12 +289,23 @@ class RawContract<const abi extends AbiRoot, contractId extends string> {
     abi?: abi;
     contractId: contractId;
 
+    /**
+     * View methods exposed as `contract.view.methodName({ args, blockQuery })`.
+     * Calls do not require a signer. Defaults to empty arguments and optimistic finality.
+     * Results are decoded by the provider; ABI arguments are validated before the RPC call when an ABI is supplied.
+     */
     view!: ContractReturnType<abi, contractId> extends {
         view: infer ViewMethods;
     }
         ? ViewMethods
         : never;
 
+    /**
+     * Change methods exposed as `contract.call.methodName({ account, args, deposit, gas, waitUntil })`.
+     * The account signs and pays. Deposit is in yoctoNEAR and gas is in gas units.
+     * Defaults to empty arguments, zero deposit, 30 TGas, and `EXECUTED_OPTIMISTIC`.
+     * Returns the decoded transaction result; ABI arguments are validated before submission when an ABI is supplied.
+     */
     call!: ContractReturnType<abi, contractId> extends {
         call: infer CallMethods;
     }
@@ -387,6 +398,12 @@ class RawContract<const abi extends AbiRoot, contractId extends string> {
     }
 }
 
+/**
+ * Creates a contract client from `{ contractId, provider, abi? }`, without deploying the contract.
+ * With an ABI, exposes and validates its declared view/change methods. Without an ABI, method names are dynamic
+ * and arguments are not schema-validated. Use `.view.methodName(...)` for queries and `.call.methodName(...)`
+ * with a signing account for transactions. Return values are not validated against the ABI at runtime.
+ */
 export const Contract = RawContract as ContractConstructor;
 
 function validateArguments(args: object, abiFunction: AbiFunction, abiRoot: AbiRoot) {

@@ -150,8 +150,10 @@ export class PublicKey extends Enum {
 
     /**
      * Creates a PublicKey instance from an encoded key string.
-     * @param encodedKey The encoded key string.
+     * @param encodedKey - Base58 public key, preferably curve-prefixed (`ed25519:`, `secp256k1:`, or `ml-dsa-65:`).
+     * Unprefixed legacy inputs infer secp256k1 for 64 decoded bytes and Ed25519 otherwise.
      * @returns {PublicKey} The PublicKey instance created from the encoded key string.
+     * @throws If the encoding, curve prefix, or decoded public key size is invalid.
      */
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
@@ -190,7 +192,11 @@ export class PublicKey extends Enum {
         return `${key_type_to_str(this.keyType)}:${encodedKey}`;
     }
 
-    /** On-trie identifier used for access keys and universal state initialization. */
+    /**
+     * Returns the on-trie identifier used for access keys and universal state initialization.
+     * @returns The curve-prefixed public key for Ed25519/secp256k1, or `ml-dsa-65-hash:` followed by
+     * the Base58 SHA3-256 public-key digest for ML-DSA-65. A hashed handle cannot verify signatures.
+     */
     toHandle(): string {
         if (this.keyType !== KeyType.MLDSA65) return this.toString();
         return `ml-dsa-65-hash:${baseEncode(hashMlDsa65PublicKey(this.data))}`;
@@ -198,8 +204,8 @@ export class PublicKey extends Enum {
 
     /**
      * Verifies a message signature using the public key.
-     * @param message The message to be verified.
-     * @param signature The signature to be verified.
+     * @param message - Signed message bytes. For secp256k1, supply the 32-byte digest; no prehash is applied.
+     * @param signature - Raw signature bytes. For secp256k1, only the first 64 bytes (compact r/s) are verified.
      * @returns {boolean} `true` if the signature is valid, otherwise `false`.
      */
     verify(message: Uint8Array, signature: Uint8Array): boolean {
@@ -236,6 +242,12 @@ export class PublicKey extends Enum {
     }
 }
 
+/**
+ * Derives a traditional implicit account ID from an Ed25519 public key, without creating the account.
+ * @param publicKey - Ed25519 public key instance or Base58 public key string.
+ * @returns The 64-character lowercase hexadecimal encoding of the 32 public-key bytes.
+ * @remarks This helper does not derive Ethereum-style, deterministic, or universal account IDs.
+ */
 export function keyToImplicitAddress(publicKey: string | PublicKey): string {
     const pk = PublicKey.from(publicKey);
 
