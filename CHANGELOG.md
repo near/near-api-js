@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.5.3
+
+### Patch Changes
+
+- [#2055](https://github.com/near/near-api-js/pull/2055) [`40a2741`](https://github.com/near/near-api-js/commit/40a27417c9912ada11d3629cf2db4ab8c489f075) Thanks [@irondevrel](https://github.com/irondevrel)! - Clarify public API documentation for transaction execution, signing, token amounts and registration, key encodings, and state initialization. Document read-after-write consistency considerations for RPC endpoints with multiple backends. No runtime behavior changes.
+
 ## 7.5.2
 
 ### Patch Changes
