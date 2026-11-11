@@ -1,6 +1,7 @@
 import type { PublicKey } from '../crypto/index.js';
 import { Enum } from '../types/index.js';
 import type { DelegateAction } from './delegate.js';
+import { decodeSignedDelegate, encodeSignedDelegate } from './schema.js';
 import type { Signature } from './signature.js';
 import type { DeterministicStateInitSchema } from './state-init.js';
 
@@ -223,6 +224,14 @@ export class SignedDelegate {
     constructor({ delegateAction, signature }: { delegateAction: DelegateAction; signature: Signature }) {
         this.delegateAction = delegateAction;
         this.signature = signature;
+    }
+
+    encode(): Uint8Array {
+        return encodeSignedDelegate(this);
+    }
+
+    static decode(bytes: Uint8Array): SignedDelegate {
+        return decodeSignedDelegate(bytes);
     }
 }
 
