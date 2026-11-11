@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.5.2
+
+### Patch Changes
+
+- [#2052](https://github.com/near/near-api-js/pull/2052) [`d42272c`](https://github.com/near/near-api-js/commit/d42272c95cbfd0f80268e9af43d9713b9846db9d) Thanks [@irondevrel](https://github.com/irondevrel)! - Recognize nearcore's flattened contract panic messages as `HostGuestPanicError`, exposing `panicMessage` consistently with structured guest panic errors.
+
 ## 7.5.1
 
 ### Patch Changes
