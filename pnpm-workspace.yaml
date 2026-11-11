@@ -9,15 +9,15 @@ allowBuilds:
   secp256k1: set this to true or false
 
 overrides:
-  ajv: 8.18.0
+  ajv: 8.20.0
   diff: 4.0.4
-  esbuild: 0.28.1
-  fast-uri: 3.1.4
-  js-yaml@3: 3.15.0
-  js-yaml@4: 4.3.0
+  esbuild: 0.28.2
+  fast-uri: 3.1.9
+  js-yaml@3: 3.15.2
+  js-yaml@4: 4.3.2
   picomatch@2: 2.3.2
-  picomatch@4: 4.0.4
-  postcss: 8.5.10
-  rollup: 4.65.0
-  tar: 7.5.19
-  vite: 8.3.5
+  picomatch@4: 4.0.7
+  postcss: 8.5.32
+  rollup: 4.68.2
+  tar: 7.5.22
+  vite: 8.3.8
