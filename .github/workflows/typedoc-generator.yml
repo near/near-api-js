@@ -6,7 +6,7 @@ on:
         master  
 
 env:
-  NODE_VERSION: 20.18.3
+  NODE_VERSION: 22.22.2
   ENTRY_FILE: 'packages'
   CONFIG_PATH: 'tsconfig.base.json'
   USES_PNPM: 'true'
