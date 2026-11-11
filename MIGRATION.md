@@ -220,6 +220,8 @@ try {
 }
 ```
 
+See [Handling transaction failures](README.md#handling-transaction-failures) for inspecting failed receipt IDs, receiver accounts, and logs through `transactionResult`, or retrieving outcomes by transaction hash.
+
 Binary inputs and signatures use `Uint8Array`; check code that depends on Buffer-specific methods. Use the documented encoding helpers when transporting bytes as base58/base64.
 
 ## Removed packages and final checks
