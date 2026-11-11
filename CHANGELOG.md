@@ -1,5 +1,23 @@
 # near-api-js
 
+## 7.5.0
+
+### Minor Changes
+
+- [#2032](https://github.com/near/near-api-js/pull/2032) [`85af012`](https://github.com/near/near-api-js/commit/85af0129e9720cf5ef7919d937077fa3496c9f3a) Thanks [@irondevrel](https://github.com/irondevrel)! - Add NEP-616 deterministic account support: canonical state-init encoding and account-ID derivation, the DeterministicStateInit transaction action, and Account.createDeterministicAccount(). Storage deposits cover storage staking and refund any excess; they do not fund the account's spending balance.
+
+- [#2036](https://github.com/near/near-api-js/pull/2036) [`f1f5621`](https://github.com/near/near-api-js/commit/f1f5621a223324d1b5f0aa2ea057eea7ee07930b) Thanks [@irondevrel](https://github.com/irondevrel)! - Expose global contract references from `Account.getState()` and add `decodeSignedDelegate()` for Borsh-encoded meta transactions.
+
+  Export `SignedDelegate` with `encode()` and `decode()` methods, reject trailing bytes and nested or reserved delegate tags when decoding signed delegates, and restore `Signature` instances when decoding signed transactions.
+
+- [#2034](https://github.com/near/near-api-js/pull/2034) [`227824b`](https://github.com/near/near-api-js/commit/227824bc9ee55392e5c5ec696a60999e8e3e0a52) Thanks [@irondevrel](https://github.com/irondevrel)! - Update generated RPC types and exhaustive error handling to the official nearcore 2.14.0 OpenAPI schema. Add access-key pagination parameters and expose the new account-view fields.
+
+- [#2035](https://github.com/near/near-api-js/pull/2035) [`0c2dca5`](https://github.com/near/near-api-js/commit/0c2dca5faa817f360040132d0cac5d25d489c551) Thanks [@irondevrel](https://github.com/irondevrel)! - Add protocol-88 universal account support, including canonical state-init construction, raw-byte account ID derivation, the UniversalStateInit action, bootstrap nonces, and nearcore 2.14 RPC types and errors.
+
+### Patch Changes
+
+- [#2029](https://github.com/near/near-api-js/pull/2029) [`799f5ad`](https://github.com/near/near-api-js/commit/799f5ad125cab910b0bc757508b2b67201c52b62) Thanks [@irondevrel](https://github.com/irondevrel)! - Accept RPC base58 code hashes in global-contract use actions while preserving 64-character hexadecimal and raw-byte inputs. Encode raw-byte hashes as base58 when querying global contract code.
+
 ## 7.4.0
 
 ### Minor Changes
