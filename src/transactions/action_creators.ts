@@ -131,8 +131,8 @@ export function stringifyJsonOrBytes(args: any): Uint8Array {
  * @param methodName the name of the method to call
  * @param args arguments to pass to method. Can be either plain JS object which gets serialized as JSON automatically
  *  or `Uint8Array` instance which represents bytes passed as is.
- * @param gas max amount of gas that method call can use
- * @param deposit amount of NEAR (in yoctoNEAR) to send together with the call
+ * @param gas - Maximum gas units, not TGas. Defaults to 0; unlike Account.callFunction, this builder does not supply 30 TGas.
+ * @param deposit - Attached amount in yoctoNEAR, not decimal NEAR. Defaults to 0.
  * @param stringify Convert input arguments into bytes array.
  */
 function functionCall(
@@ -154,7 +154,7 @@ function functionCall(
 
 /**
  * Creates a new action for transferring funds, optionally specifying a deposit amount.
- * @param deposit The amount to be deposited along with the transfer. Default: 0.
+ * @param deposit - Amount in yoctoNEAR, not decimal NEAR. Defaults to 0.
  * @returns A new action for transferring funds.
  */
 function transfer(deposit = 0n): Action {
@@ -163,7 +163,7 @@ function transfer(deposit = 0n): Action {
 
 /**
  * Creates a new action for staking tokens, specifying the stake amount and public key.
- * @param stake The amount to be staked. Default: 0.
+ * @param stake - Target stake in yoctoNEAR, not an increment to the current stake. Defaults to 0 (unstake).
  * @param publicKey The public key associated with the staking action.
  * @returns A new action for staking tokens.
  */
@@ -194,7 +194,7 @@ function addFullAccessKey(publicKey: PublicKey): Action {
  * @param publicKey The public key to be added.
  * @param receiverId The NEAR account ID of the function call receiver.
  * @param methodNames An array of method names allowed for function calls.
- * @param allowance An optional allowance (maximum amount) for the function call.
+ * @param allowance - Gas-spending allowance in yoctoNEAR. Omit for unlimited allowance; 0 is a zero allowance.
  * @returns A new action for adding a function call access key.
  */
 function addFunctionCallAccessKey(
@@ -294,7 +294,7 @@ function signedDelegate({
 /**
  * Creates a new action for deploying a global contract with provided code and mode.
  * @param code The Uint8Array representing the contract code.
- * @param deployMode The mode to deploy global contract (CodeHash or AccountId).
+ * @param deployMode - `codeHash` for immutable publication or `accountId` for publication that the publisher can update.
  * @returns A new action for deploying a global contract.
  */
 function deployGlobalContract(code: Uint8Array, deployMode: 'codeHash' | 'accountId'): Action {
@@ -318,7 +318,12 @@ function useGlobalContract(contractIdentifier: { accountId: string } | { codeHas
     });
 }
 
-/** Initialize a NEP-616 deterministic account. Deposit pays storage; excess is refunded. */
+/**
+ * Builds a NEP-616 initialization action without submitting it.
+ * @param stateInit - Canonical state initialization; submit the action to its derived account ID.
+ * @param deposit - Storage deposit in yoctoNEAR. Defaults to 0; excess is refunded by the protocol.
+ * @returns An initialization action to include in a transaction.
+ */
 function deterministicStateInit(stateInit: DeterministicStateInit, deposit = 0n): Action {
     return new Action({
         deterministicStateInit: new DeterministicStateInitAction({
@@ -328,7 +333,12 @@ function deterministicStateInit(stateInit: DeterministicStateInit, deposit = 0n)
     });
 }
 
-/** Initialize a universal account from canonical raw state-init bytes. Requires protocol 88. */
+/**
+ * Builds a protocol-88 universal initialization action without submitting it.
+ * @param stateInit - Raw versioned state-init bytes, forwarded unchanged for node validation.
+ * @param deposit - Deposit in yoctoNEAR. Defaults to 0.
+ * @returns An initialization action; submit it to the account ID derived from the exact supplied bytes.
+ */
 function universalStateInit(stateInit: Uint8Array, deposit = 0n): Action {
     return new Action({ universalStateInit: new UniversalStateInitAction({ stateInit, deposit }) });
 }

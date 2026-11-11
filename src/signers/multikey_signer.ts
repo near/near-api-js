@@ -35,6 +35,12 @@ export class MultiKeySigner extends Signer {
         this.keys = keys;
     }
 
+    /**
+     * Creates a rotating signer from local secret keys.
+     * @param encodedKeys - Nonempty array of curve-prefixed Base58 secret keys.
+     * @returns A signer holding the imported keys in memory.
+     * @throws If the array is empty or a secret key is invalid.
+     */
     public static fromSecretKeys(encodedKeys: KeyPairString[]): MultiKeySigner {
         const keys = encodedKeys.map(KeyPair.fromString);
         return new MultiKeySigner(keys);

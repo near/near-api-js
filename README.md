@@ -199,6 +199,14 @@ console.log(messages);
 
 `Provider.callFunction()` uses `method` and returns the decoded view result (or `undefined` for an empty result). `Account.callFunction()` uses `methodName` and returns the decoded transaction result; use `Account.callFunctionRaw()` for the transaction outcome. Generic types describe the expected JSON shape; they do not validate the contract's response at runtime.
 
+### Reading after a transaction
+
+Transactions default to `waitUntil: 'EXECUTED_OPTIMISTIC'`, and view calls default to `blockQuery: { finality: 'optimistic' }`. A single RPC URL can route requests to different backend nodes at different heights, so an immediate view may return older state even after the transaction's non-refund receipts have executed. These defaults do not guarantee read-after-write consistency across backend nodes.
+
+If your application needs to observe the write, retry the view with bounded backoff and a deadline. Alternatively, query a specific snapshot using `blockQuery: { blockId: receipt.block_hash }`, where `receipt` is the entry in the transaction result's `receipts_outcome` that performed the relevant write. A lagging backend may not have that block available yet, so pinned queries can also require retries.
+
+Use the execution receipt's block, rather than `transaction_outcome.block_hash`, which can precede the write. Cross-contract transactions can contain several receipts that change state; choose the receipt relevant to the state you are reading.
+
 ### Handling transaction failures
 
 `Account` throws on transaction failure by default. Catch exported error classes instead of extracting information from error-message strings. Contract panics expose `panicMessage`; execution errors derived from a submitted transaction also expose its full RPC response as `transactionResult`:

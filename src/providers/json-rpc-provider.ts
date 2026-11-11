@@ -2,7 +2,7 @@
  * @module
  * This module contains the {@link JsonRpcProvider} client class
  * which can be used to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see {@link "@near-js/types".provider | provider} for a list of request and response types
+ * @see {@link JsonRpcProvider} for query, transaction, and network methods.
  */
 
 import type {
@@ -92,7 +92,13 @@ const DEFAULT_FINALITY = 'optimistic';
 
 /**
  * Client class to interact with the [NEAR RPC API](https://docs.near.org/api/rpc/introduction).
- * @see [https://github.com/near/nearcore/tree/master/chain/jsonrpc](https://github.com/near/nearcore/tree/master/chain/jsonrpc)
+ *
+ * @remarks
+ * Methods reject when an HTTP request or RPC operation fails. RPC errors are mapped to the
+ * exported classes in `near-api-js/rpc-errors`; transport failures can throw other error types.
+ * Convenience methods with an optional finality selector default to optimistic finality.
+ *
+ * @see [NEAR RPC API](https://docs.near.org/api/rpc/introduction)
  */
 export class JsonRpcProvider implements Provider {
     /** @hidden */
@@ -105,7 +111,13 @@ export class JsonRpcProvider implements Provider {
     private networkId: string | undefined;
 
     /**
-     * @param connectionInfo Connection info
+     * Creates a provider for an RPC endpoint.
+     *
+     * @param connectionInfo - RPC URL and optional HTTP headers, such as an API authorization header.
+     * @param options - Retry settings for retryable HTTP and fetch failures.
+     * @param options.retries - Maximum number of request attempts, including the first. Defaults to 12.
+     * @param options.wait - Initial delay between attempts in milliseconds. Defaults to 500.
+     * @param options.backoff - Multiplier applied to the delay after each retry. Defaults to 1.5.
      */
     constructor(connectionInfo: ConnectionInfo, options?: Partial<RequestOptions>) {
         this.connection = connectionInfo || { url: '' };
@@ -118,6 +130,11 @@ export class JsonRpcProvider implements Provider {
         this.networkId = undefined;
     }
 
+    /**
+     * Gets the network identifier reported by the node and caches it for this provider instance.
+     *
+     * @returns The node's chain ID, such as `mainnet` or `testnet`.
+     */
     public async getNetworkId(): Promise<string> {
         if (this.networkId) return this.networkId;
 
@@ -128,6 +145,12 @@ export class JsonRpcProvider implements Provider {
         return this.networkId;
     }
 
+    /**
+     * Calculates the validator seat price from the current validator set and optimistic protocol configuration.
+     *
+     * @returns The calculated minimum stake in yoctoNEAR as a bigint.
+     * @throws If the protocol configuration does not expose `minimum_stake_ratio`, or an RPC request fails.
+     */
     public async getCurrentEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } =
             await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
@@ -143,6 +166,12 @@ export class JsonRpcProvider implements Provider {
         return findSeatPrice(currentValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
     }
 
+    /**
+     * Calculates the validator seat price from the next validator set and optimistic protocol configuration.
+     *
+     * @returns The calculated minimum stake in yoctoNEAR as a bigint.
+     * @throws If the protocol configuration does not expose `minimum_stake_ratio`, or an RPC request fails.
+     */
     public async getNextEpochSeatPrice(): Promise<bigint> {
         const { minimum_stake_ratio: minStakeRatio, protocol_version: protocolVersion } =
             await this.experimental_protocolConfig({ finality: DEFAULT_FINALITY });
@@ -158,6 +187,15 @@ export class JsonRpcProvider implements Provider {
         return findSeatPrice(nextValidators, maxNumberOfSeats, minStakeRatio, protocolVersion);
     }
 
+    /**
+     * Queries an account's access key.
+     *
+     * @param params - Access key query options.
+     * @param params.accountId - Account that owns the key.
+     * @param params.publicKey - Public key instance or curve-prefixed public key string.
+     * @param params.finalityQuery - Finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns Key permissions and block context, with `nonce` converted to a bigint.
+     */
     public async viewAccessKey({
         accountId,
         publicKey,
@@ -176,6 +214,15 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
+    /**
+     * Queries one page of an account's access keys.
+     *
+     * @param params - Access key list query options.
+     * @param params.accountId - Account whose keys to query.
+     * @param params.limit - Maximum keys requested for this page. If omitted, the node applies its default.
+     * @param params.finalityQuery - Finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns The RPC key list, pagination fields, and block context. Does not fetch subsequent pages.
+     */
     public async viewAccessKeyList({
         accountId,
         afterKey,
@@ -192,7 +239,13 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Returns the current nonce of each lane of a gas key
+     * Queries the nonce lanes of a gas key.
+     *
+     * @param params - Gas key query options.
+     * @param params.accountId - Account that owns the gas key.
+     * @param params.publicKey - Public key instance or curve-prefixed public key string.
+     * @param params.finalityQuery - Finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns The RPC nonce-lane data and block context, without numeric conversion.
      */
     public async viewGasKeyNonces({
         accountId,
@@ -207,6 +260,14 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
+    /**
+     * Queries an account's on-chain state.
+     *
+     * @param params - Account query options.
+     * @param params.accountId - Account to query.
+     * @param params.blockQuery - Block height/hash or finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns Account state and block context, with `amount` and `locked` converted to bigints in yoctoNEAR.
+     */
     public async viewAccount({ accountId, blockQuery = { finality: DEFAULT_FINALITY } }: ViewAccountArgs) {
         let reference: { block_id: BlockId } | { finality: Finality };
 
@@ -231,6 +292,14 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
+    /**
+     * Queries the code deployed on a contract account.
+     *
+     * @param params - Contract code query options.
+     * @param params.contractId - Account whose deployed code to query.
+     * @param params.blockQuery - Block height/hash or finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns The RPC code response and block context, plus decoded WASM bytes in `code`.
+     */
     public async viewContractCode({ contractId, blockQuery = { finality: DEFAULT_FINALITY } }: ViewContractCodeArgs) {
         let reference: { block_id: BlockId } | { finality: Finality };
 
@@ -254,6 +323,16 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
+    /**
+     * Queries a global contract by code hash or publishing account.
+     *
+     * @param params - Global contract query options.
+     * @param params.identifier - Either `{ codeHash }` with a Base58 hash or raw hash bytes,
+     * or `{ accountId }` with the publishing account ID.
+     * @param params.blockQuery - Block height/hash or finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns The RPC code response and block context, plus decoded WASM bytes in `code`.
+     * @throws If the identifier has neither a code hash nor an account ID, or the RPC request fails.
+     */
     public async viewGlobalContractCode({
         identifier,
         blockQuery = { finality: DEFAULT_FINALITY },
@@ -296,6 +375,15 @@ export class JsonRpcProvider implements Provider {
         };
     }
 
+    /**
+     * Queries a contract's raw storage entries matching a UTF-8 prefix.
+     *
+     * @param params - Contract storage query options.
+     * @param params.contractId - Account whose storage to query.
+     * @param params.prefix - UTF-8 key prefix, encoded to Base64 by this method. Defaults to an empty prefix.
+     * @param params.blockQuery - Block height/hash or finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns The RPC storage response and block context. Keys and values remain Base64-encoded.
+     */
     public async viewContractState({
         contractId,
         prefix,
@@ -321,6 +409,26 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
+    /**
+     * Calls a contract view method without submitting a transaction and decodes its result.
+     *
+     * @typeParam T - Expected result type. This does not validate the returned value at runtime.
+     * @param params - View call options.
+     * @param params.contractId - Account ID of the contract to query.
+     * @param params.method - Name of the contract's view method.
+     * @param params.args - Arguments serialized as JSON, or a Uint8Array containing already serialized arguments.
+     * @param params.blockQuery - Block height/hash or finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns The JSON-decoded result, or its UTF-8 string if it is not valid JSON.
+     * Returns `undefined` when the contract returns no bytes.
+     * @throws If the RPC request or contract execution fails.
+     *
+     * @remarks
+     * RPC backends may be at different heights, so a view immediately after a transaction can return older state.
+     * If you need to observe the write immediately, use bounded retries or pin the query
+     * to the relevant execution receipt's block.
+     *
+     * @see [Reading after a transaction](https://github.com/near/near-api-js#reading-after-a-transaction)
+     */
     public async callFunction<T extends SerializedReturnValue>({
         contractId,
         method,
@@ -340,6 +448,18 @@ export class JsonRpcProvider implements Provider {
         }
     }
 
+    /**
+     * Calls a contract view method and returns its raw RPC response without decoding the result bytes.
+     *
+     * @param params - View call options.
+     * @param params.contractId - Account ID of the contract to query.
+     * @param params.method - Name of the contract's view method.
+     * @param params.args - Arguments serialized as JSON, or a Uint8Array containing already serialized arguments.
+     * @param params.blockQuery - Block height/hash or finality to query. Defaults to `{ finality: 'optimistic' }`.
+     * @returns Result bytes as a number array, execution logs, and the queried block's hash and height.
+     * @throws If the RPC request or contract execution fails, or the block reference is invalid.
+     * @see {@link callFunction} for automatic result decoding and read-after-write considerations.
+     */
     public async callFunctionRaw({
         contractId,
         method,
@@ -370,32 +490,55 @@ export class JsonRpcProvider implements Provider {
         }
     }
 
+    /**
+     * Queries a block's header and chunk headers.
+     *
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @returns The RPC block response. Chunk contents require a separate {@link viewChunk} call.
+     */
     public async viewBlock(blockQuery: BlockReference): Promise<RpcBlockResponse> {
         const { finality } = blockQuery as any;
         const { blockId } = blockQuery as any;
         return this.sendJsonRpc('block', { block_id: blockId, finality });
     }
 
+    /**
+     * Queries a chunk's contents.
+     *
+     * @param chunkId - A chunk hash, or a `[blockId, shardId]` tuple.
+     * @returns The chunk header, transactions, and receipts reported by the node.
+     */
     public async viewChunk(chunkId: ChunkId): Promise<RpcChunkResponse> {
         return this.sendJsonRpc('chunk', [chunkId]);
     }
 
+    /**
+     * Queries the gas price at a block.
+     *
+     * @param blockId - Block height or hash. If omitted, queries the node's latest block.
+     * @returns The gas price in yoctoNEAR per unit of gas, as an RPC decimal string.
+     */
     public async viewGasPrice(blockId?: BlockId): Promise<RpcGasPriceResponse> {
         return this.sendJsonRpc('gas_price', [blockId || null]);
     }
 
+    /**
+     * Queries node status, including its version, chain ID, and synchronization progress.
+     *
+     * @returns The RPC node status response.
+     */
     public async viewNodeStatus(): Promise<RpcStatusResponse> {
         return this.sendJsonRpc('status', []);
     }
 
     /**
-     * Query validators of an epoch.
-     * @see [https://docs.near.org/api/rpc/network#validation-status](https://docs.near.org/api/rpc/network#validation-status)
+     * Queries validator information for an epoch.
      *
-     * @param params Object specifying either a block or epoch to query.
-     * - `{ blockId }`: Block hash or height.
-     * - `{ epochId }`: Epoch hash.
-     * - `null`: Current epoch.
+     * @param params - Either `{ blockId }` with a block height/hash or `{ epochId }` with an epoch hash.
+     * Omit to query the current epoch.
+     * @returns Current and next validator sets, proposals, and other validator statistics reported by the node.
+     * @throws If the selector is invalid or the RPC request fails.
+     * @see [NEAR RPC network methods](https://docs.near.org/api/rpc/network)
      */
     public async viewValidators(params?: ViewValidatorsArgs): Promise<RpcValidatorResponse> {
         if (typeof params === 'undefined') return this.sendJsonRpc('validators', [null]);
@@ -409,6 +552,17 @@ export class JsonRpcProvider implements Provider {
         throw new Error('Invalid parameters for validators');
     }
 
+    /**
+     * Queries a submitted transaction and waits for the requested execution milestone.
+     *
+     * @param params - Transaction status query options.
+     * @param params.txHash - Transaction hash as a Base58 string or raw hash bytes.
+     * @param params.accountId - Transaction signer's account ID, used to locate its shard.
+     * @param params.waitUntil - Execution milestone to wait for. Defaults to `EXECUTED_OPTIMISTIC`.
+     * @returns The RPC transaction response, including execution outcomes when available.
+     * Execution failures are returned in the response; this method does not throw merely because a contract failed.
+     * @see [Transaction execution milestones](https://docs.near.org/api/rpc/transactions#the-wait_until-field)
+     */
     public async viewTransactionStatus({
         txHash,
         accountId,
@@ -423,6 +577,18 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
+    /**
+     * Queries transaction status with receipt details using `EXPERIMENTAL_tx_status`.
+     *
+     * @param params - Transaction status query options.
+     * @param params.txHash - Transaction hash as a Base58 string or raw hash bytes.
+     * @param params.accountId - Transaction signer's account ID, used to locate its shard.
+     * @param params.waitUntil - Execution milestone to wait for. Defaults to `EXECUTED_OPTIMISTIC`.
+     * @returns The RPC transaction response, with execution outcomes and available receipt details.
+     * Execution failures are returned in the response. Receipt details can be incomplete at early milestones.
+     * @see {@link viewTransactionStatus}
+     * @see [NEAR RPC transaction methods](https://docs.near.org/api/rpc/transactions)
+     */
     public async viewTransactionStatusWithReceipts({
         txHash,
         accountId,
@@ -437,6 +603,13 @@ export class JsonRpcProvider implements Provider {
         });
     }
 
+    /**
+     * Queries a receipt by its ID using `EXPERIMENTAL_receipt`.
+     *
+     * @param receiptId - Base58 receipt ID.
+     * @returns Receipt contents, rather than its execution outcome.
+     * @see {@link viewTransactionStatus} for receipt execution outcomes.
+     */
     public async viewTransactionReceipt(receiptId: string): Promise<RpcReceiptResponse> {
         return this.sendJsonRpc('EXPERIMENTAL_receipt', {
             receipt_id: receiptId,
@@ -444,10 +617,13 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Sends a signed transaction to the RPC
+     * Submits a signed transaction using `send_tx` and waits for the requested execution milestone.
      *
-     * @param signedTransaction The signed transaction being sent
-     * @param waitUntil
+     * @param signedTransaction - Transaction signed with the sender's access key.
+     * @param waitUntil - Execution milestone to wait for. `NONE` returns without waiting for inclusion or execution.
+     * @returns The RPC transaction response. Available fields depend on the execution milestone reached.
+     * Execution failures are returned in the response; this method does not throw merely because a contract failed.
+     * @see [Transaction execution milestones](https://docs.near.org/api/rpc/transactions#the-wait_until-field)
      */
     async sendTransactionUntil(
         signedTransaction: SignedTransaction,
@@ -461,29 +637,37 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Sends a signed transaction to the RPC and waits until transaction is fully complete
-     * @see [https://docs.near.org/docs/develop/front-end/rpc#send-transaction-await](https://docs.near.org/docs/develop/front-end/rpc#general-validator-status)
+     * Submits a signed transaction and waits for `EXECUTED_OPTIMISTIC`.
      *
-     * @param signedTransaction The signed transaction being sent
+     * @param signedTransaction - Transaction signed with the sender's access key.
+     * @returns The RPC transaction response after non-refund receipts have executed, without waiting for finality.
+     * Execution failures are returned in the response.
+     * @see {@link sendTransactionUntil} to select a different execution milestone.
      */
     async sendTransaction(signedTransaction: SignedTransaction): Promise<RpcTransactionResponse> {
         return this.sendTransactionUntil(signedTransaction, 'EXECUTED_OPTIMISTIC');
     }
 
     /**
-     * Sends a signed transaction to the RPC and immediately returns transaction hash
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#send-transaction-async)
-     * @param signedTransaction The signed transaction being sent
-     * @returns {Promise<FinalExecutionOutcome>}
+     * Submits a signed transaction using `send_tx` with `wait_until: 'NONE'`.
+     *
+     * @param signedTransaction - Transaction signed with the sender's access key.
+     * @returns The immediate RPC response, without waiting for inclusion or execution.
+     * This is not the hash-only response of `broadcast_tx_async`; compute the transaction hash locally if needed.
+     * @see {@link sendTransactionUntil}
      */
     async sendTransactionAsync(signedTransaction: SignedTransaction): Promise<RpcTransactionResponse> {
         return this.sendTransactionUntil(signedTransaction, 'NONE');
     }
 
     /**
-     * Query the RPC by passing an {@link RpcQueryRequest }
-     * @see [https://docs.near.org/api/rpc/contracts](https://docs.near.org/api/rpc/contracts)
+     * Sends a raw `query` request without the conversions performed by the convenience methods.
      *
+     * @typeParam R - Expected RPC query result shape, excluding the block context added to the return type.
+     * This does not validate the response at runtime.
+     * @param params - RPC query parameters, using snake_case field names and an explicit block/finality selector.
+     * @returns The RPC result with its block hash and height. Numeric strings and encoded bytes are left unchanged.
+     * @see {@link callFunction}, {@link viewAccount}, and {@link viewAccessKey} for convenience methods.
      */
     async query<R extends Omit<RpcQueryResponse, 'block_hash' | 'block_height'>>(
         params: RpcQueryRequest
@@ -497,9 +681,11 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Query changes in block from the RPC
-     * pass block_id OR finality as blockQuery, not both
-     * @see [https://docs.near.org/api/rpc/block-chunk](https://docs.near.org/api/rpc/block-chunk)
+     * Queries which accounts and state categories changed in a block.
+     *
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @returns The block hash and a summary of changes, rather than the changed values themselves.
+     * @see {@link accountChanges}, {@link accessKeyChanges}, and {@link contractStateChanges} for changed values.
      */
     async blockChanges(blockQuery: BlockReference): Promise<RpcStateChangesInBlockByTypeResponse> {
         const { finality } = blockQuery as any;
@@ -508,9 +694,10 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets the protocol config at a block from RPC
+     * Queries protocol configuration at a block using `EXPERIMENTAL_protocol_config`.
      *
-     * @param blockReference specifies the block to get the protocol config for
+     * @param blockReference - A `{ blockId }` or `{ finality }` selector, or `{ sync_checkpoint: 'genesis' }`.
+     * @returns The node's protocol configuration for the selected block or checkpoint.
      */
     async experimental_protocolConfig(
         blockReference: BlockReference | { sync_checkpoint: 'genesis' }
@@ -520,8 +707,17 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets a light client execution proof for verifying execution outcomes
-     * @see [https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof](https://github.com/nearprotocol/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
+     * Queries a proof of a transaction or receipt execution outcome.
+     *
+     * @param request - Proof request using the RPC's snake_case field names.
+     * @param request.type - Whether to prove a `transaction` or `receipt` outcome.
+     * @param request.light_client_head - Block hash of the light client's trusted head.
+     * @param request.transaction_hash - Transaction hash, required for a transaction proof.
+     * @param request.sender_id - Transaction signer's account ID, required for a transaction proof.
+     * @param request.receipt_id - Receipt ID, required for a receipt proof.
+     * @param request.receiver_id - Receipt receiver's account ID, required for a receipt proof.
+     * @returns The execution outcome and Merkle paths needed to verify it against the light client head.
+     * @see [NEAR light client proofs](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-proof)
      */
     async lightClientProof(request: LightClientProofRequest): Promise<RpcLightClientExecutionProofResponse> {
         return await this.sendJsonRpc('EXPERIMENTAL_light_client_proof', request);
@@ -532,15 +728,21 @@ export class JsonRpcProvider implements Provider {
      * to still be able to validate from that hash. This will either return the last block of the
      * next epoch, or the last final known block.
      *
-     * @see [https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
+     * @param request - Light client update request.
+     * @param request.last_block_hash - Last block hash already known to the light client.
+     * @returns A verifiable light client block update from the node.
+     * @see [NEAR light client blocks](https://github.com/near/NEPs/blob/master/specs/ChainSpec/LightClient.md#light-client-block)
      */
     async nextLightClientBlock(request: NextLightClientBlockRequest): Promise<RpcLightClientNextBlockResponse> {
         return await this.sendJsonRpc('next_light_client_block', request);
     }
 
     /**
-     * Gets access key changes for a given array of accountIds
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-all)
+     * Queries access key changes for the selected accounts in one block.
+     *
+     * @param accountIdArray - Accounts whose access key changes to query.
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @returns The RPC change records and block hash, with values left in their RPC representation.
      */
     async accessKeyChanges(
         accountIdArray: string[],
@@ -557,9 +759,11 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets single access key changes for a given array of access keys
-     * pass block_id OR finality as blockQuery, not both
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-access-key-changes-single)
+     * Queries changes to specific access keys in one block.
+     *
+     * @param accessKeyArray - Keys to query, each with `account_id` and a curve-prefixed `public_key` string.
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @returns The RPC change records and block hash, with values left in their RPC representation.
      */
     async singleAccessKeyChanges(
         accessKeyArray: AccessKeyWithPublicKey[],
@@ -576,9 +780,11 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets account changes for a given array of accountIds
-     * pass block_id OR finality as blockQuery, not both
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-account-changes)
+     * Queries account changes in one block.
+     *
+     * @param accountIdArray - Accounts whose changes to query.
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @returns The RPC account change records and block hash; balances remain decimal strings in yoctoNEAR.
      */
     async accountChanges(
         accountIdArray: string[],
@@ -595,10 +801,13 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets contract state changes for a given array of accountIds
-     * pass block_id OR finality as blockQuery, not both
-     * Note: If you pass a keyPrefix it must be base64 encoded
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-state-changes)
+     * Queries contract storage changes in one block.
+     *
+     * @param accountIdArray - Contract accounts whose storage changes to query.
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @param keyPrefix - Already Base64-encoded storage key prefix. Defaults to an empty prefix.
+     * Unlike {@link viewContractState}, this method does not encode the prefix for you.
+     * @returns The RPC storage change records and block hash; storage keys and values remain Base64-encoded.
      */
     async contractStateChanges(
         accountIdArray: string[],
@@ -617,10 +826,11 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Gets contract code changes for a given array of accountIds
-     * pass block_id OR finality as blockQuery, not both
-     * Note: Change is returned in a base64 encoded WASM file
-     * See [docs for more info](https://docs.near.org/docs/develop/front-end/rpc#view-contract-code-changes)
+     * Queries contract code changes in one block.
+     *
+     * @param accountIdArray - Contract accounts whose code changes to query.
+     * @param blockQuery - Either `{ blockId }` with a block height/hash, or `{ finality }`.
+     * @returns The RPC code change records and block hash; WASM code remains Base64-encoded.
      */
     async contractCodeChanges(
         accountIdArray: string[],
@@ -637,10 +847,15 @@ export class JsonRpcProvider implements Provider {
     }
 
     /**
-     * Directly call the RPC specifying the method and params
+     * Sends a JSON-RPC request, applying the provider's retry settings and RPC error parsing.
      *
-     * @param method RPC method
-     * @param params Parameters to the method
+     * @typeParam Method - RPC method name from the supported method map.
+     * @typeParam Params - Request parameter type; defaults to the selected method's parameter type.
+     * @typeParam Result - Response result type; defaults to the selected method's result type.
+     * @param method - RPC method name.
+     * @param params - Parameters in the RPC method's expected wire format.
+     * @returns The response's `result`, without numeric or byte decoding. A JSON `null` result is preserved.
+     * @throws If the transport fails, the RPC reports an error, or the response has no usable result.
      */
     async sendJsonRpc<
         Method extends keyof Methods,

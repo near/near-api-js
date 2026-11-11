@@ -2,7 +2,7 @@ import { KeyPair, type KeyPairString, type PublicKey } from '../crypto/index.js'
 import { Signer } from './signer.js';
 
 /**
- * Signs using in KeyPair.
+ * Signs locally using an in-memory key pair. Does not submit transactions or store credentials.
  */
 export class KeyPairSigner extends Signer {
     private readonly key: KeyPair;
@@ -12,6 +12,12 @@ export class KeyPairSigner extends Signer {
         this.key = key;
     }
 
+    /**
+     * Creates a local signer from a secret key.
+     * @param encodedKey - Curve-prefixed Base58 secret key, such as `ed25519:...`.
+     * @returns A signer holding the imported key pair in memory.
+     * @throws If the key format or key material is invalid.
+     */
     public static fromSecretKey(encodedKey: KeyPairString): KeyPairSigner {
         const key = KeyPair.fromString(encodedKey);
 

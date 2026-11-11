@@ -35,6 +35,14 @@ export class NFTContract {
         this.accountId = accountId;
     }
 
+    /**
+     * Calls `nft_transfer` with 30 TGas and a deposit of 1 yoctoNEAR, paid by the sender.
+     * @param params - NFT transfer options.
+     * @param params.from - Account signing the transfer.
+     * @param params.receiverId - Account receiving the NFT.
+     * @param params.tokenId - Token identifier within this NFT contract.
+     * @returns The decoded contract result. Does not perform receiver storage registration.
+     */
     transfer({ from, receiverId, tokenId }: { from: Account; receiverId: string; tokenId: string }): Promise<any> {
         return from.callFunction({
             contractId: this.accountId,

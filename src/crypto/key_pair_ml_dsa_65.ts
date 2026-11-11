@@ -20,6 +20,11 @@ export class KeyPairMLDSA65 extends KeyPairBase {
     readonly secretKey: string;
     private readonly signingKey: Uint8Array;
 
+    /**
+     * Imports ML-DSA-65 secret key material.
+     * @param secretKey - Base58 encoding of a 32-byte seed or 4032-byte expanded secret key, without a curve prefix.
+     * @throws If the decoded length is unsupported or an expanded key fails consistency validation.
+     */
     constructor(secretKey: string) {
         super();
         const secretKeyBytes = baseDecode(secretKey);

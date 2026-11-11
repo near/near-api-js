@@ -57,6 +57,11 @@ export class KeyPairSecp256k1 extends KeyPairBase {
         return new KeyPairSecp256k1(baseEncode(extendedSecretKey));
     }
 
+    /**
+     * Signs a digest using NEAR's secp256k1 signature format.
+     * @param message - 32-byte message digest; this method does not hash it again.
+     * @returns The public key and 65 raw signature bytes ordered as compact r/s followed by the recovery ID.
+     */
     sign(message: Uint8Array): Signature {
         // nearcore expects 65 byte signatures formed by appending the recovery id to the 64 byte signature
         // noble v2 'recovered' format is [recovery, r, s] but NEAR expects [r, s, recovery]
