@@ -449,7 +449,14 @@ function parseFunctionCallError(
 
     if ('WasmTrap' in error) return new WasmTrapError(error.WasmTrap, blockHash, blockHeight);
 
-    if ('ExecutionError' in error) return new ContractExecutionError(error.ExecutionError, blockHash, blockHeight);
+    if ('ExecutionError' in error) {
+        // Nearcore flattens HostError::GuestPanic into this display string in current RPC responses.
+        const panicPrefix = 'Smart contract panicked: ';
+        if (error.ExecutionError.startsWith(panicPrefix)) {
+            return new HostGuestPanicError(error.ExecutionError.slice(panicPrefix.length), blockHash, blockHeight);
+        }
+        return new ContractExecutionError(error.ExecutionError, blockHash, blockHeight);
+    }
 
     // ensures all ContractExecutionError variants are handled at compile time
     error satisfies never;
