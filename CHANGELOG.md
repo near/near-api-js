@@ -1,5 +1,11 @@
 # near-api-js
 
+## 7.5.1
+
+### Patch Changes
+
+- [#2040](https://github.com/near/near-api-js/pull/2040) [`7162d13`](https://github.com/near/near-api-js/commit/7162d138470fd13c122c4a684e98e017b15e0e6b) Thanks [@irondevrel](https://github.com/irondevrel)! - Add optional `limit` and `afterKey` parameters to `Account.getAccessKeyList()` so callers can paginate access keys on accounts exceeding the RPC node's unpaginated key limit. Existing no-argument calls and the single-page return shape are preserved.
+
 ## 7.5.0
 
 ### Minor Changes
