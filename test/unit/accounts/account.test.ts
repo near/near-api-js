@@ -11,8 +11,8 @@ import {
     KeyPairSigner,
     KeyType,
 } from '../../../src/index.js';
-import { ContractExecutionError } from '../../../src/providers/errors/contract_execution.js';
 import { AccountAlreadyExistsActionError } from '../../../src/providers/errors/transaction_execution.js';
+import { HostGuestPanicError } from '../../../src/rpc-errors/index.js';
 import {
     createAccount,
     generateUniqueString,
@@ -208,9 +208,9 @@ describe('with deploy contract', () => {
             });
             expect.fail('should have thrown');
         } catch (thrown: unknown) {
-            expect(thrown).toBeInstanceOf(ContractExecutionError);
-            const error = thrown as ContractExecutionError;
-            expect(error.message).toMatch(/Smart contract panicked: expected to fail./);
+            expect(thrown).toBeInstanceOf(HostGuestPanicError);
+            const error = thrown as HostGuestPanicError;
+            expect(error.panicMessage).toMatch(/^expected to fail, filename:/);
             expect(error.transactionResult?.transaction_outcome.id).toBeDefined();
         }
     });
