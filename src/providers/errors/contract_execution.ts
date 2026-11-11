@@ -6,6 +6,12 @@ export class ContractExecutionError extends HandlerError {
     /**
      * Complete RPC response when this error was derived from a failed submitted transaction.
      *
+     * Inspect `receipts_outcome` for entries whose `outcome.status` contains `Failure`.
+     * Each entry's `id` is its receipt ID; `outcome.executor_id` identifies the receiver,
+     * and `outcome.logs` contains its execution logs. Multiple receipts may fail, including
+     * failures handled by callbacks; the first failure is not necessarily the final cause.
+     * The response is already attached, so inspecting it requires no additional RPC call.
+     *
      * It is unavailable for read-only (view) calls: they do not submit a transaction or produce receipts.
      */
     public transactionResult?: RpcTransactionResponse;

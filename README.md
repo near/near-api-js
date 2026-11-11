@@ -199,6 +199,48 @@ console.log(messages);
 
 `Provider.callFunction()` uses `method` and returns the decoded view result (or `undefined` for an empty result). `Account.callFunction()` uses `methodName` and returns the decoded transaction result; use `Account.callFunctionRaw()` for the transaction outcome. Generic types describe the expected JSON shape; they do not validate the contract's response at runtime.
 
+### Handling transaction failures
+
+`Account` throws on transaction failure by default. Catch exported error classes instead of extracting information from error-message strings. Contract panics expose `panicMessage`; execution errors derived from a submitted transaction also expose its full RPC response as `transactionResult`:
+
+```typescript
+import {
+  ContractExecutionError,
+  HostGuestPanicError,
+  TransactionExecutionError,
+} from 'near-api-js/rpc-errors';
+
+try {
+  await account.callFunction({
+    contractId: 'contract.testnet',
+    methodName: 'some_method',
+    args: {},
+  });
+} catch (error) {
+  if (error instanceof HostGuestPanicError) {
+    console.error(error.panicMessage);
+  }
+  if (error instanceof ContractExecutionError || error instanceof TransactionExecutionError) {
+    for (const receipt of error.transactionResult?.receipts_outcome ?? []) {
+      const status = receipt.outcome.status;
+      if (typeof status === 'object' && 'Failure' in status) {
+        console.error({
+          receiptId: receipt.id,
+          receiverId: receipt.outcome.executor_id,
+          failure: status.Failure,
+          logs: receipt.outcome.logs,
+        });
+      }
+    }
+  }
+  throw error;
+}
+```
+
+This inspection needs no additional RPC call. There may be multiple failed receipts, including failures handled by callbacks, so the first failed receipt is not necessarily the cause of the transaction's final failure. Read-only calls produce no transaction receipts; submission or RPC errors may also lack `transactionResult`.
+
+With `account.signAndSendTransaction({ receiverId, actions, throwOnFailure: false })`, inspect the returned outcome's `status` and `receipts_outcome` instead. If you only retained the transaction hash, fetch the outcome with `provider.viewTransactionStatus({ txHash, accountId: senderAccountId, waitUntil: 'FINAL' })`. `viewTransactionStatusWithReceipts()` additionally retrieves receipt details. These low-level status methods return the RPC result; inspect its failure status explicitly.
+
 ### Failover RPC Provider
 
 You can easily define multiple RPC endpoints to connect to  NEAR network, if one fails the next one will be used automatically.
