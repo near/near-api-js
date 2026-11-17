@@ -16,7 +16,7 @@
     "devDependencies": {
         "@types/node": "26.6.6",
         "picomatch": "4.0.7",
-        "postcss": "8.5.32",
+        "postcss": "8.5.33",
         "rollup": "4.68.2",
         "typescript": "6.0.3",
         "vite": "8.3.8",
