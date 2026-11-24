@@ -16,6 +16,10 @@ export async function exponentialBackoff(startWaitTime, retryNumber, waitBackoff
             return result;
         }
 
+        if (i === retryNumber - 1) {
+            break;
+        }
+
         await sleep(waitTime);
         waitTime *= waitBackoff;
     }
