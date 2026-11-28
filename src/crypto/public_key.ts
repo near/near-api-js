@@ -158,7 +158,7 @@ export class PublicKey extends Enum {
     static fromString(encodedKey: string): PublicKey {
         const parts = encodedKey.split(':');
         let publicKey: string;
-        let keyType;
+        let keyType: KeyType | undefined;
         if (parts.length === 1) {
             publicKey = parts[0]!;
         } else if (parts.length === 2) {
@@ -168,7 +168,7 @@ export class PublicKey extends Enum {
             throw new Error('Invalid encoded key format, must be <curve>:<encoded key>');
         }
         const decodedPublicKey = baseDecode(publicKey);
-        if (!keyType) {
+        if (keyType === undefined) {
             keyType = decodedPublicKey.length === KeySize.SECP256k1_PUBLIC_KEY ? KeyType.SECP256K1 : KeyType.ED25519;
         }
         const keySize =

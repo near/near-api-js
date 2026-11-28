@@ -42,3 +42,11 @@ test('ML-DSA-65 public keys retain their type and full wire representation', () 
     expect(publicKey.data).toEqual(data);
     expect(publicKey.toString()).toBe(`ml-dsa-65:${baseEncode(data)}`);
 });
+
+test('fromString rejects an ed25519-prefixed key that is not 32 bytes', () => {
+    const data = Uint8Array.from({ length: 64 }, (_, index) => index);
+
+    expect(() => PublicKey.fromString(`ed25519:${baseEncode(data)}`)).toThrow(
+        'Invalid public key size (64), must be 32'
+    );
+});
